@@ -28,6 +28,23 @@ class ParameterTree:
     def add(self, parametrized):
         self.tracked[parametrized.name] = parametrized
 
+    def deserialize(self, restore_dict):
+        for catname, catdata in restore_dict.items():
+            for paramsname, paramsdata in catdata.items():
+                for paramname, paramdata in paramsdata.items():
+                    try:
+                        self.tracked[catname + "/" + paramsname].params[paramname] = paramdata
+                    except KeyError:
+                        pass
+
+    def serialize(self):
+        new_dict = dict()
+        for name, parameterized in self.tracked:
+            category, section = name.split("/")
+            if not category in new_dict.keys():
+                new_dict[category] = dict()
+            new_dict[category][section] = parameterized.params.values
+        return new_dict
 
 class Parametrized(object):
     def __init__(self, name="", tree=None):
