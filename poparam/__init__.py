@@ -21,10 +21,21 @@ class Paramcontainer:
         return self.parametrized.__dict__[item]
 
 
-class Parametrized(object):
+class ParameterTree:
     def __init__(self):
+        self.tracked = dict()
+
+    def add(self, parametrized):
+        self.tracked[parametrized.name] = parametrized
+
+
+class Parametrized(object):
+    def __init__(self, name="", tree=None):
         super().__init__()
+        self.name = name
         self.params = Paramcontainer(self)
+        if tree is not None:
+            tree.add(self)
 
     def __getattribute__(self, item):
         if isinstance(object.__getattribute__(self, item), Param):

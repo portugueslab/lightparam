@@ -7,6 +7,7 @@ gui_map = dict(spin=ControlSpin,
                combo=ControlCombo,
                text=ControlText)
 
+
 class ParameterGui(QWidget):
     """ A QT gui for a parametrized class
 
