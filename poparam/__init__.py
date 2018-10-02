@@ -22,28 +22,40 @@ class Paramcontainer:
 
 
 class ParameterTree:
-    def __init__(self):
-        self.tracked = dict()
+    """ Class for managing a two-level tree of parameters
 
-    def add(self, parametrized):
-        self.tracked[parametrized.name] = parametrized
+    """
+    def __init__(self, categories=(), allow_new_categories=False):
+        self.categories = categories
+        self.tracked = dict()
+        self.allow_new_categories = allow_new_categories
+        for cat in self.categories:
+            self.tracked[cat] = dict()
+
+    def add(self, category, parametrized):
+        if category not in self.tracked.keys():
+            if not self.allow_new_categories:
+                raise Exception("Tying to add ", parametrized.name,
+                                " parameters to nonexistent category ",
+                                category)
+            else:
+                self.tracked[category] = dict()
+        self.tracked[category][parametrized.name] = parametrized
 
     def deserialize(self, restore_dict):
         for catname, catdata in restore_dict.items():
             for paramsname, paramsdata in catdata.items():
                 for paramname, paramdata in paramsdata.items():
                     try:
-                        self.tracked[catname + "/" + paramsname].params[paramname] = paramdata
+                        self.tracked[catname][paramsname].params[paramname] = paramdata
                     except KeyError:
                         pass
 
     def serialize(self):
-        new_dict = dict()
-        for name, parameterized in self.tracked:
-            category, section = name.split("/")
-            if not category in new_dict.keys():
-                new_dict[category] = dict()
-            new_dict[category][section] = parameterized.params.values
+        new_dict = {catname:dict() for catname in self.tracked.keys()}
+        for category, catdata in self.tracked:
+            for section, parameterized in catdata:
+                new_dict[category][section] = parameterized.params.values
         return new_dict
 
 class Parametrized(object):

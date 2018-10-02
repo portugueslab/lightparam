@@ -35,7 +35,7 @@ class ControlSpin(Control):
         if isinstance(param.value, float):
             self.control = QDoubleSpinBox()
         else:
-            self.control = QDoubleSpinBox()
+            self.control = QSpinBox()
         # if limits are set, put them in
         self.control.setValue(param.value)
         try:
