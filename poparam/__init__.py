@@ -35,7 +35,10 @@ class ParameterTree:
         for cat in self.categories:
             self.tracked[cat] = dict()
 
-    def add(self, category, parametrized):
+    def add(self, parametrized, category=None):
+        if category is None:
+            category = parametrized.category
+        
         if category not in self.tracked.keys():
             if not self.allow_new_categories:
                 raise Exception("Tying to add ", parametrized.name,
@@ -63,10 +66,11 @@ class ParameterTree:
 
 
 class Parametrized(object):
-    def __init__(self, name="", tree=None):
+    def __init__(self, name="", category=None, tree=None):
         super().__init__()
         self.name = name
         self.params = Paramcontainer(self)
+        self.category = None
         if tree is not None:
             tree.add(self)
 
