@@ -47,32 +47,12 @@ class ParameterTree:
     """ Class for managing a multi-level tree of parameters
 
     """
-    def __init__(self):  # , categories=(), allow_new_categories=False):
-        # self.categories = categories
+    def __init__(self):
         self.tracked = dict()
-        # self.allow_new_categories = allow_new_categories
-        # for cat in self.categories:
-        #     self.tracked[cat] = dict()
 
     def add(self, parametrized):
-        #
-        # if category not in self.tracked.keys():
-        #     if not self.allow_new_categories:
-        #         raise Exception("Tying to add ", parametrized.name,
-        #                         " parameters to nonexistent category ",
-        #                         category)
-        #     else:
-        #         self.tracked[category] = dict()
         self.tracked[parametrized.name] = parametrized
 
-    # def deserialize(self, restore_dict):
-    #     for catname, catdata in restore_dict.items():
-    #         for paramsname, paramsdata in catdata.items():
-    #             for paramname, paramdata in paramsdata.items():
-    #                 try:
-    #                     self.tracked[catname][paramsname].params[paramname] = paramdata
-    #                 except KeyError:
-    #                     pass
     def deserialize(self, restore_dict):
         for k, val in visit_dict(restore_dict):
             try:
@@ -88,14 +68,6 @@ class ParameterTree:
         for k in self.tracked.keys():
             set_nested(new_dict, k.split('/'), self.tracked[k].params.values)
         return new_dict
-
-    # def serialize(self):
-    #     new_dict = {catname: dict() for catname in self.tracked.keys()}
-    #     print(self.tracked)
-    #     for category, catdata in self.tracked:
-    #         for section, parameterized in catdata:
-    #             new_dict[category][section] = parameterized.params.values
-    #     return new_dict
 
 
 class Parametrized(object):
