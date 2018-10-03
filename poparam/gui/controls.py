@@ -117,9 +117,7 @@ class ControlText(Control):
         self.control.setText(str(self.param.value))
 
     def update_param(self):
-        print(type(getattr(self.parametrized, self.param_name)))
         setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
-        print(type(getattr(self.parametrized, self.param_name)))
 
 
 class ParameterControl(QWidget):
