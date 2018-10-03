@@ -22,25 +22,26 @@ def pretty_name(paramname: str):
 
 
 class Control(QWidget):
-    def __init__(self, param, name):
+    def __init__(self, parametrized, name):
         super().__init__()
-        self.param = param
+        self.parametrized = parametrized
+        self.param = parametrized.params[name]
         self.param_name = name
         self.label = QLabel(pretty_name(name))
 
 
 class ControlSpin(Control):
-    def __init__(self, param, name):
-        super().__init__(param, name)
-        if isinstance(param.value, float):
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
+        if isinstance(parametrized.params[name].value, float):
             self.control = QDoubleSpinBox()
         else:
             self.control = QSpinBox()
         # if limits are set, put them in
-        self.control.setValue(param.value)
+        self.control.setValue(self.param.value)
         try:
-            self.control.setMinimum(param.limits[0])
-            self.control.setMaximum(param.limits[1])
+            self.control.setMinimum(self.param.limits[0])
+            self.control.setMaximum(self.param.limits[1])
         except TypeError:
             pass
         self.setLayout(QHBoxLayout())
@@ -53,12 +54,12 @@ class ControlSpin(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
-        self.param.value = self.control.value()
+        setattr(self.parametrized, self.param_name, self.control.value())
 
 
 class ControlCheck(Control):
-    def __init__(self, param, name):
-        super().__init__(param, name)
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
         self.control = QCheckBox()
         # if limits are set, put them in
         self.control.setChecked(param.value)
@@ -72,40 +73,40 @@ class ControlCheck(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
-        self.param.value = self.control.isChecked()
+        setattr(self.parametrized, self.param_name, self.control.isChecked())
 
 
 class ControlCombo(Control):
-    def __init__(self, param, name):
-        super().__init__(param, name)
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
         self.control = QComboBox()
 
-        self.control.setCurrentText(str(param.value))
-        self.control.addItems([str(it) for it in param.limits])
+        self.control.setCurrentText(str(self.param.value))
+        self.control.addItems([str(it) for it in self.param.limits])
 
-        self.item_type = type(param.value)
+        self.item_type = type(self.param.value)
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.control)
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.control.currentTextChanged.connect(self.update_param)
-        self.control.setEditable(param.editable)
+        self.control.setEditable(self.param.editable)
 
     def update_display(self):
         self.control.setCurrentText(str(self.param.value))
 
     def update_param(self):
-        self.param.value = self.item_type(self.control.currentText())
+        setattr(self.parametrized, self.param_name, self.control.currentText())
 
 
 class ControlText(Control):
-    def __init__(self, param, name):
-        super().__init__(param, name)
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
         self.control = QLineEdit()
 
-        self.control.setText(str(param.value))
+        self.control.setText(str(self.param.value))
 
-        self.item_type = type(param.value)
+        self.item_type = type(self.param.value)
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.control)
@@ -116,7 +117,9 @@ class ControlText(Control):
         self.control.setText(str(self.param.value))
 
     def update_param(self):
-        self.param.value = self.item_type(self.control.text())
+        print(type(getattr(self.parametrized, self.param_name)))
+        setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
+        print(type(getattr(self.parametrized, self.param_name)))
 
 
 class ParameterControl(QWidget):

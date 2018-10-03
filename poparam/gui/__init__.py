@@ -19,8 +19,8 @@ class ParameterGui(QWidget):
         self.inner_layout = QVBoxLayout()
         self.setLayout(self.inner_layout)
         self.param_widgets = {}
-        for name, param in self.paramatrized.params.items().items():
-            widget = self.make_widget(param, name)
+        for name in self.paramatrized.params.items().keys():
+            widget = self.make_widget(parameterized, name)
             self.param_widgets[name] = widget
             self.inner_layout.addWidget(widget)
 
@@ -28,9 +28,9 @@ class ParameterGui(QWidget):
         self.btnPrint.clicked.connect(self.print_params)
         self.inner_layout.addWidget(self.btnPrint)
 
-    def make_widget(self, param, name):
+    def make_widget(self, parametrized, name):
         try:
-            return gui_map[param.gui](param, name)
+            return gui_map[parametrized.params[name].gui](parametrized, name)
         except KeyError:
             raise Exception("Trying to build gui for an unsupported type ", param.gui)
 
@@ -48,8 +48,10 @@ class TestParametrized(Parametrized):
 
 
 if __name__ == "__main__":
+
     k = TestParametrized()
     app = QApplication([])
+    print(k.params['a_str'])
     p = ParameterGui(k)
     p.show()
     app.exec_()

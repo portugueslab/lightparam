@@ -20,6 +20,9 @@ class Paramcontainer:
     def __getattr__(self, item):
         return self.parametrized.__dict__[item]
 
+    def __getitem__(self, item):
+        return self.parametrized.__dict__[item]
+
 
 class ParameterTree:
     """ Class for managing a two-level tree of parameters
@@ -52,11 +55,12 @@ class ParameterTree:
                         pass
 
     def serialize(self):
-        new_dict = {catname:dict() for catname in self.tracked.keys()}
+        new_dict = {catname: dict() for catname in self.tracked.keys()}
         for category, catdata in self.tracked:
             for section, parameterized in catdata:
                 new_dict[category][section] = parameterized.params.values
         return new_dict
+
 
 class Parametrized(object):
     def __init__(self, name="", tree=None):
@@ -72,6 +76,14 @@ class Parametrized(object):
         else:
             return object.__getattribute__(self, item)
 
+    def __setattr__(self, item, value):
+        if hasattr(self, item):
+            if isinstance(object.__getattribute__(self, item), Param):
+                object.__getattribute__(self, item).value = value
+            else:
+                object.__setattr__(self, item, value)
+        else:
+            object.__setattr__(self, item, value)
 
 class Param:
     def __init__(self, value, limits=None, desc="", gui=None, unit="", scale=None, editable=False):

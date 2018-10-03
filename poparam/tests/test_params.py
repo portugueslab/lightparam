@@ -13,6 +13,7 @@ class TestBasic(unittest.TestCase):
         tc = TC()
         assert tc.x == 1.0
         assert tc.params.x.value == 1.0
+        assert tc.params['x'].value == 1.0
 
 
 class TestParamFunc(unittest.TestCase):
