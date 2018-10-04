@@ -12,6 +12,7 @@ class ParametrizedQt(Parametrized, QObject):
         self.block_signal = False
 
     def __setattr__(self, item, value):
+        super().__setattr__(item, value)
         if hasattr(self, 'params'):
             try:
                 assert (isinstance(self.__dict__[item], Param))
@@ -20,7 +21,7 @@ class ParametrizedQt(Parametrized, QObject):
             except (KeyError, AssertionError):
                 pass
 
-        super().__setattr__(item, value)
+
 
 
 class ParametrizedWidget(Parametrized, QWidget):
@@ -31,6 +32,7 @@ class ParametrizedWidget(Parametrized, QWidget):
         self.block_signal = False
 
     def __setattr__(self, item, value):
+        super().__setattr__(item, value)
         if hasattr(self, 'params'):
             try:
                 assert(isinstance(self.__dict__[item], Param))
@@ -39,7 +41,7 @@ class ParametrizedWidget(Parametrized, QWidget):
             except (KeyError, AssertionError):
                 pass
 
-        super().__setattr__(item, value)
+
 
 
 if __name__ == "__main__":
@@ -57,7 +59,7 @@ if __name__ == "__main__":
             self.c = Param(5)
             self.a_list = Param("a", ["a", "b", "c"])
             self.sig_param_changed.connect(self.set_physical_scale)
-            self.show()
+            # self.show()
 
         def set_physical_scale(self):
             """Calculate mm/px from calibrator length"""
