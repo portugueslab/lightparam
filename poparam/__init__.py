@@ -56,10 +56,8 @@ class ParameterTree:
     def deserialize(self, restore_dict):
         for k, val in visit_dict(restore_dict):
             try:
-                # print(k[-1])
-                self.tracked['/'.join(k[:-1])].params[k[-1]].value = val
-                # setattr(self.tracked['/'.join(k[:-1])], k[-1], val)
-                # self.tracked['/'.join(k[:-1])].params[k[-1]] = val
+                # self.tracked['/'.join(k[:-1])].params[k[-1]].value = val
+                setattr(self.tracked['/'.join(k[:-1])], k[-1], val)
             except KeyError:
                 pass
 
@@ -129,29 +127,3 @@ class Param:
 class Paramfunc:
     def __init__(self, func):
         pass
-
-if __name__ == "__main__":
-    class TestParametrized1(Parametrized):
-        def __init__(self, **kwargs):
-            super().__init__(name='a/gino', **kwargs)
-            self.an_int = Param(1)
-            self.a_float = Param(1.0, (-1.0, 10.0))
-            self.a_str = Param("strstr")
-            self.a_list = Param("a", ["a", "b", "c"])
-
-    class TestParametrized2(Parametrized):
-        def __init__(self, **kwargs):
-            super().__init__(name='b/c/pino', **kwargs)
-            self.an_int = Param(4)
-            self.a_float = Param(1.0, (-1.0, 10.0))
-
-    tree = ParameterTree()
-    paramtrized1 = TestParametrized1(tree=tree)
-    paramtrized2 = TestParametrized2(tree=tree)
-    dict1 = tree.serialize()
-    paramtrized1.an_int = 10
-
-    print(tree.serialize())
-    # print('got here')
-    tree.deserialize(dict1)
-    print(tree.serialize())

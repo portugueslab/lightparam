@@ -1,6 +1,6 @@
 import unittest
 
-from poparam import Parametrized, Param
+from poparam import Parametrized, Param, ParameterTree
 
 
 class TestBasic(unittest.TestCase):
@@ -14,6 +14,34 @@ class TestBasic(unittest.TestCase):
         assert tc.x == 1.0
         assert tc.params.x.value == 1.0
         assert tc.params['x'].value == 1.0
+
+
+class TestTree(unittest.TestCase):
+    def testConstruct(self):
+        class TestParametrized1(Parametrized):
+            def __init__(self, **kwargs):
+                super().__init__(name='a/gino', **kwargs)
+                self.an_int = Param(1)
+                self.a_float = Param(1.0, (-1.0, 10.0))
+                self.a_str = Param("strstr")
+                self.a_list = Param("a", ["a", "b", "c"])
+
+        class TestParametrized2(Parametrized):
+            def __init__(self, **kwargs):
+                super().__init__(name='b/c/pino', **kwargs)
+                self.an_int = Param(4)
+                self.a_float = Param(1.0, (-1.0, 10.0))
+
+        tree = ParameterTree()
+        paramtrized1 = TestParametrized1(tree=tree)
+        paramtrized2 = TestParametrized2(tree=tree)
+        dict1 = tree.serialize()
+        paramtrized1.an_int = 10
+        paramtrized2.a_str = 'b'
+
+        assert dict1 != tree.serialize()
+        tree.deserialize(dict1)
+        assert dict1 == tree.serialize()
 
 
 class TestParamFunc(unittest.TestCase):
