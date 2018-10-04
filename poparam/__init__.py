@@ -73,7 +73,6 @@ class Parametrized(object):
         super().__init__()
         self.name = name
         self.params = ParamContainer(self)
-        self.category = category
         if tree is not None:
             tree.add(self)
 

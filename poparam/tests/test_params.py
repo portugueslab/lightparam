@@ -9,6 +9,7 @@ class TestBasic(unittest.TestCase):
             def __init__(self):
                 super().__init__()
                 self.x = Param(1.0)
+                self.tuple_param = Param((10, 20))
 
         tc = TC()
         assert tc.x == 1.0

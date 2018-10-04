@@ -1,6 +1,6 @@
 from poparam import Parametrized, Param, ParameterTree
 from poparam.gui import ParameterGui
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QLayout
 from PyQt5.QtCore import pyqtSignal, QObject
 
 
@@ -11,12 +11,31 @@ class ParametrizedQt(Parametrized, QObject):
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, item, value):
+        if hasattr(self, 'params'):
+            try:
+                self.params[item]
+                self.sig_param_changed.emit({item: value})
+            except KeyError:
+                pass
+
         super().__setattr__(item, value)
-        self.sig_param_changed.emit(dict(item=value))
 
 
-# class ParameterTreeQt(ParameterTree):
+class ParametrizedWidget(Parametrized, QWidget):
+    sig_param_changed = pyqtSignal(dict)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __setattr__(self, item, value):
+        if hasattr(self, 'params'):
+            try:
+                self.params[item]
+                self.sig_param_changed.emit({item: value})
+            except KeyError:
+                pass
+
+        super().__setattr__(item, value)
 
 
 if __name__ == "__main__":
@@ -25,7 +44,7 @@ if __name__ == "__main__":
     # p = ParameterGui(k)
     # p.show()
 
-    class TestParametrized1(ParametrizedQt):
+    class TestParametrized1(ParametrizedWidget):
         def __init__(self, **kwargs):
             super().__init__(name='a/gino', **kwargs)
             self.an_int = Param(1)
@@ -33,6 +52,9 @@ if __name__ == "__main__":
             self.a_str = Param("strstr")
             self.a_list = Param("a", ["a", "b", "c"])
             self.sig_param_changed.connect(self.print_change)
+            print('showing')
+            self.show()
+            print('show')
 
         @staticmethod
         def print_change(change_dict):
