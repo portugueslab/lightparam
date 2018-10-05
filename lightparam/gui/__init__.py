@@ -2,10 +2,9 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QPushButton
 from lightparam.gui.controls import *
 from lightparam import Parametrized, Param
 
-gui_map = dict(spin=ControlSpin,
-               check=ControlCheck,
-               combo=ControlCombo,
-               text=ControlText)
+gui_map = dict(
+    spin=ControlSpin, check=ControlCheck, combo=ControlCombo, text=ControlText
+)
 
 
 class ParameterGui(QWidget):
@@ -51,7 +50,7 @@ if __name__ == "__main__":
 
     k = TestParametrized()
     app = QApplication([])
-    print(k.params['a_str'])
+    print(k.params["a_str"])
     p = ParameterGui(k)
     p.show()
     app.exec_()

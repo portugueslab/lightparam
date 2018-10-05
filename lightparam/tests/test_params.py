@@ -14,14 +14,14 @@ class TestBasic(unittest.TestCase):
         tc = TC()
         assert tc.x == 1.0
         assert tc.params.x.value == 1.0
-        assert tc.params['x'].value == 1.0
+        assert tc.params["x"].value == 1.0
 
 
 class TestTree(unittest.TestCase):
     def testConstruct(self):
         class TestParametrized1(Parametrized):
             def __init__(self, **kwargs):
-                super().__init__(name='a/gino', **kwargs)
+                super().__init__(name="a/gino", **kwargs)
                 self.an_int = Param(1)
                 self.a_float = Param(1.0, (-1.0, 10.0))
                 self.a_str = Param("strstr")
@@ -29,7 +29,7 @@ class TestTree(unittest.TestCase):
 
         class TestParametrized2(Parametrized):
             def __init__(self, **kwargs):
-                super().__init__(name='b/c/pino', **kwargs)
+                super().__init__(name="b/c/pino", **kwargs)
                 self.an_int = Param(4)
                 self.a_float = Param(1.0, (-1.0, 10.0))
 
@@ -38,7 +38,7 @@ class TestTree(unittest.TestCase):
         paramtrized2 = TestParametrized2(tree=tree)
         dict1 = tree.serialize()
         paramtrized1.an_int = 10
-        paramtrized2.a_str = 'b'
+        paramtrized2.a_str = "b"
 
         assert dict1 != tree.serialize()
         tree.deserialize(dict1)
@@ -52,4 +52,4 @@ class TestParamFunc(unittest.TestCase):
 
         print(paramfunc.__annotations__)
         z = paramfunc.__annotations__
-        assert paramfunc.__annotations__["x"].value == 0.5
+        assert z["x"].value == 0.5

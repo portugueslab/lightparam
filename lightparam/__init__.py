@@ -17,7 +17,7 @@ def visit_dict(d, path=[]):
             yield from visit_dict(v, path + [k])
 
 
-class ParamContainer:
+class ParamContainer(object):
     def __init__(self, p):
         self.parametrized = p
 
@@ -37,7 +37,10 @@ class ParamContainer:
         }
 
     def __getattr__(self, item):
-        return self.parametrized.__dict__[item]
+        if item in self.parametrized.__dict__.keys():
+            return self.parametrized.__dict__[item]
+        else:
+            raise AttributeError
 
     def __getitem__(self, item):
         return self.parametrized.__dict__[item]
@@ -47,6 +50,7 @@ class ParameterTree:
     """ Class for managing a multi-level tree of parameters
 
     """
+
     def __init__(self):
         self.tracked = dict()
 
@@ -57,14 +61,14 @@ class ParameterTree:
         for k, val in visit_dict(restore_dict):
             try:
                 # self.tracked['/'.join(k[:-1])].params[k[-1]].value = val
-                setattr(self.tracked['/'.join(k[:-1])], k[-1], val)
+                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
             except KeyError:
                 pass
 
     def serialize(self):
         new_dict = dict()
         for k in self.tracked.keys():
-            set_nested(new_dict, k.split('/'), self.tracked[k].params.values)
+            set_nested(new_dict, k.split("/"), self.tracked[k].params.values)
         return new_dict
 
 
@@ -93,7 +97,9 @@ class Parametrized(object):
 
 
 class Param:
-    def __init__(self, value, limits=None, desc="", gui=None, unit="", scale=None, editable=False):
+    def __init__(
+        self, value, limits=None, desc="", gui=None, unit="", scale=None, editable=False
+    ):
         """ A parameter
 
         :param value: default value

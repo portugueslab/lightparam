@@ -13,15 +13,13 @@ class ParametrizedQt(Parametrized, QObject):
 
     def __setattr__(self, item, value):
         super().__setattr__(item, value)
-        if hasattr(self, 'params'):
+        if hasattr(self, "params"):
             try:
-                assert (isinstance(self.__dict__[item], Param))
-                if not getattr(self, 'block_signal', False):
+                assert isinstance(self.__dict__[item], Param)
+                if not getattr(self, "block_signal", False):
                     self.sig_param_changed.emit({item: value})
             except (KeyError, AssertionError):
                 pass
-
-
 
 
 class ParametrizedWidget(Parametrized, QWidget):
@@ -33,26 +31,25 @@ class ParametrizedWidget(Parametrized, QWidget):
 
     def __setattr__(self, item, value):
         super().__setattr__(item, value)
-        if hasattr(self, 'params'):
+        if hasattr(self, "params"):
             try:
-                assert(isinstance(self.__dict__[item], Param))
-                if not getattr(self, 'block_signal', False):
+                assert isinstance(self.__dict__[item], Param)
+                if not getattr(self, "block_signal", False):
                     self.sig_param_changed.emit({item: value})
             except (KeyError, AssertionError):
                 pass
 
 
-
-
 if __name__ == "__main__":
     from lightparam import ParameterTree
+
     app = QApplication([])
     # p = ParameterGui(k)
     # p.show()
 
     class TestParametrized1(ParametrizedWidget):
         def __init__(self, **kwargs):
-            super().__init__(name='a/gino', **kwargs)
+            super().__init__(name="a/gino", **kwargs)
             self.random = 5
             self.a = Param(1)
             self.b = Param(2.)
@@ -69,10 +66,9 @@ if __name__ == "__main__":
                 self.c = self.a / self.b
                 self.block_signal = False
 
-
     class TestParametrized2(ParametrizedQt):
         def __init__(self, **kwargs):
-            super().__init__(name='b/c/pino', **kwargs)
+            super().__init__(name="b/c/pino", **kwargs)
             self.an_int = Param(4)
             self.a_float = Param(1.0, (-1.0, 10.0))
 
@@ -82,7 +78,7 @@ if __name__ == "__main__":
     dict1 = tree.serialize()
     # print(dict1)
     # paramtrized1.block_signal = True
-    print('setting a')
+    print("setting a")
     paramtrized1.a = 10
     # paramtrized1.block_signal = False
     print(tree.serialize())
@@ -90,4 +86,3 @@ if __name__ == "__main__":
     # tree.deserialize(dict1)
     # print(tree.serialize())
     app.exec_()
-
