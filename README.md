@@ -1,7 +1,7 @@
-# PoParam
+# Lightparam
 Another attempt at parameters in Python, built to satify requirements of Stytra:
 
-[ ] Automatic GUI building
-[ ] Parametrized functions
-[ ] Global parameter tree structure
-[ ] Saving and restoring
+- [x] Automatic GUI building
+- [ ] Parametrized functions
+- [x] Global parameter tree structure
+- [x] Saving and restoring
