@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QPushButton
-from poparam.gui.controls import *
-from poparam import Parametrized, Param
+from lightparam.gui.controls import *
+from lightparam import Parametrized, Param
 
 gui_map = dict(spin=ControlSpin,
                check=ControlCheck,

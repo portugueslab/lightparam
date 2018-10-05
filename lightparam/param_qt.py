@@ -1,5 +1,5 @@
-from poparam import Parametrized, Param, ParameterTree
-from poparam.gui import ParameterGui
+from lightparam import Parametrized, Param, ParameterTree
+from lightparam.gui import ParameterGui
 from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QLayout
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -39,7 +39,7 @@ class ParametrizedWidget(Parametrized, QWidget):
 
 
 if __name__ == "__main__":
-    from poparam import ParameterTree
+    from lightparam import ParameterTree
     app = QApplication([])
     # p = ParameterGui(k)
     # p.show()

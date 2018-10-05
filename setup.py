@@ -2,7 +2,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-    name="poparam",
+    name="lightparam",
     version="0.1",
     author="Vilim Stich, Luigi Petrucco",
     author_email="vilim@neuro.mpg.de",

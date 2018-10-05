@@ -1,6 +1,6 @@
 import unittest
 
-from poparam import Parametrized, Param, ParameterTree
+from lightparam import Parametrized, Param, ParameterTree
 
 
 class TestBasic(unittest.TestCase):
