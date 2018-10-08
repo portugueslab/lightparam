@@ -1,9 +1,14 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QPushButton
 from lightparam.gui.controls import *
+from lightparam.gui.precisionslider import RangeSliderWidgetWithNumbers
 from lightparam import Parametrized, Param
 
 gui_map = dict(
-    spin=ControlSpin, check=ControlCheck, combo=ControlCombo, text=ControlText
+    spin=ControlSpin,
+    check=ControlCheck,
+    combo=ControlCombo,
+    text=ControlText,
+    range_slider=RangeSliderWidgetWithNumbers,
 )
 
 
@@ -16,26 +21,27 @@ class ParameterGui(QWidget):
         super().__init__()
         self.paramatrized = parameterized
         self.inner_layout = QVBoxLayout()
+        self.inner_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.inner_layout)
         self.param_widgets = {}
         for name in self.paramatrized.params.items().keys():
             widget = self.make_widget(parameterized, name)
+            if widget is None:
+                continue
             self.param_widgets[name] = widget
             self.inner_layout.addWidget(widget)
 
-        self.btnPrint = QPushButton("Print")
-        self.btnPrint.clicked.connect(self.print_params)
-        self.inner_layout.addWidget(self.btnPrint)
-
     def make_widget(self, parametrized, name):
+        gui_type = parametrized.params[name].gui
+        if gui_type is None:
+            return
         try:
-            return gui_map[parametrized.params[name].gui](parametrized, name)
+            return gui_map[gui_type](parametrized, name)
         except KeyError:
-            raise Exception("Trying to build gui for an unsupported type ", param.gui)
-
-    def print_params(self):
-        print(self.paramatrized.params.values)
-
+            raise Exception(
+                "Trying to build gui for an unsupported type ",
+                parametrized.params[name].gui,
+            )
 
 class TestParametrized(Parametrized):
     def __init__(self):
