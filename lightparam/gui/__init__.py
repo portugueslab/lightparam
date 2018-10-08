@@ -19,12 +19,12 @@ class ParameterGui(QWidget):
 
     def __init__(self, parameterized):
         super().__init__()
-        self.paramatrized = parameterized
+        self.parametrized = parameterized
         self.inner_layout = QVBoxLayout()
         self.inner_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.inner_layout)
         self.param_widgets = {}
-        for name in self.paramatrized.params.items().keys():
+        for name in self.parametrized.params.items().keys():
             widget = self.make_widget(parameterized, name)
             if widget is None:
                 continue
@@ -50,10 +50,11 @@ class TestParametrized(Parametrized):
         self.a_float = Param(1.0, (-1.0, 10.0))
         self.a_str = Param("strstr")
         self.a_list = Param("a", ["a", "b", "c"])
+        self.a_bool = Param(False)
+        self.a_range = Param((0.5, 1.5), (0.0, 2.0))
 
 
 if __name__ == "__main__":
-
     k = TestParametrized()
     app = QApplication([])
     print(k.params["a_str"])

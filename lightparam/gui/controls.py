@@ -62,7 +62,7 @@ class ControlCheck(Control):
         super().__init__(parametrized, name)
         self.control = QCheckBox()
         # if limits are set, put them in
-        self.control.setChecked(param.value)
+        self.control.setChecked(self.param.value)
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.control)

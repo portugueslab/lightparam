@@ -142,12 +142,12 @@ class Param:
         if gui is None:
             if isinstance(self.limits, list):
                 self.gui = "combo"
+            elif isinstance(self.value, bool):
+                self.gui = "check"
             elif isinstance(self.value, int) or isinstance(self.value, float):
                 self.gui = "spin"
             elif isinstance(self.value, str):
                 self.gui = "text"
-            elif isinstance(self.value, bool):
-                self.gui = "check"
             elif isinstance(self.value, tuple):
                 if len(self.value) == 2:
                     self.gui = "range_slider"

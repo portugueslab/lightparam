@@ -9,7 +9,7 @@ from lightparam.gui.controls import pretty_name
 class RangeSliderWidgetWithNumbers(QWidget):
     sig_changed = pyqtSignal(float, float)
 
-    def __init__(self, parametrized, name):
+    def __init__(self, parametrized, name, precision=2):
         super().__init__()
         self.name = name
         self.grid_layout = QGridLayout()
@@ -19,26 +19,15 @@ class RangeSliderWidgetWithNumbers(QWidget):
         self.spin_right = QDoubleSpinBox()
 
         min_val, max_val = parametrized.params[name].limits
-        left, right = parametrized.params[name].value
-
-        centre = (min_val + max_val) / 2
-        range = max_val - min_val
-        if right is None:
-            self.right = centre + range / 10
-        else:
-            self.right = right
-        if left is None:
-            self.left = centre - range / 10
-        else:
-            self.left = left
+        self.left, self.right = parametrized.params[name].value
 
         self.spin_left.setValue(self.left)
         self.spin_right.setValue(self.right)
 
         for spin in [self.spin_right, self.spin_left]:
             spin.setRange(min_val, max_val)
-            spin.setDecimals(4)
-            spin.setSingleStep(0.001)
+            spin.setDecimals(precision)
+            spin.setSingleStep(10**(- precision))
         self.spin_left.valueChanged.connect(self.update_slider_left)
         self.spin_right.valueChanged.connect(self.update_slider_right)
         self.label_name = QLabel(pretty_name(name))
@@ -46,7 +35,9 @@ class RangeSliderWidgetWithNumbers(QWidget):
         self.grid_layout.addWidget(self.spin_left, 0, 0)
         self.grid_layout.addWidget(self.label_name, 0, 1)
         self.grid_layout.addWidget(self.spin_right, 0, 2)
-        self.range_slider = RangeSliderWidget(min_val, max_val, left=left, right=right)
+        self.range_slider = RangeSliderWidget(min_val, max_val,
+                                              left=self.left,
+                                              right=self.right)
         self.grid_layout.addWidget(self.range_slider, 1, 0, 1, 3)
         self.setLayout(self.grid_layout)
         self.range_slider.sig_changed.connect(self.update_values)
@@ -56,7 +47,7 @@ class RangeSliderWidgetWithNumbers(QWidget):
     def update_values(self, l, r):
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
-        self.sig_changed.emit(l,r)
+        self.sig_changed.emit(l, r)
         self.left, self.right = l, r
 
     def update_slider_left(self, new_val):
