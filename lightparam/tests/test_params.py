@@ -50,6 +50,6 @@ class TestParamFunc(unittest.TestCase):
         def paramfunc(x: Param(0.5), y: Param("ABCDF")):
             return x, y
 
-        print(paramfunc.__annotations__)
-        z = paramfunc.__annotations__
-        assert z["x"].value == 0.5
+        p = Parametrized(params=paramfunc)
+        assert p.x==0.5
+        assert p.y=="ABCDF"
