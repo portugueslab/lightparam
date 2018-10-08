@@ -1,6 +1,6 @@
 from functools import reduce
 
-
+# TODO @Luigi please comment this a bit
 def get_nested(d, path):
     return reduce(lambda d, k: d.setdefault(k, {}), path, d)
 
@@ -35,6 +35,11 @@ class ParamContainer(object):
             for name, param in self.parametrized.__dict__.items()
             if isinstance(param, Param)
         }
+
+    @values.setter
+    def values(self, new_values):
+        for key, val in new_values.items():
+            self.parametrized.__dict__[key].value = val
 
     def __getattr__(self, item):
         if item in self.parametrized.__dict__.keys():
