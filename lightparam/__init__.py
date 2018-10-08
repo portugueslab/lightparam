@@ -73,10 +73,26 @@ class ParameterTree:
 
 
 class Parametrized(object):
-    def __init__(self, name="", category=None, tree=None):
+    def __init__(self, name="", tree=None, params=None):
+        """ Creates a parameterized class
+
+        :param name: name, with optional path separated by slashes
+        :param tree: a parameter-storing tree
+        :param params: (optional) a dictionary of params
+        """
         super().__init__()
         self.name = name
+
+        if params is not None:
+            if callable(params):
+                params = params.__annotations__
+
+            for key, value in params.items():
+                if isinstance(value, Param):
+                    setattr(self, key, value)
+
         self.params = ParamContainer(self)
+
         if tree is not None:
             tree.add(self)
 
@@ -127,8 +143,9 @@ class Param:
                 self.gui = "text"
             elif isinstance(self.value, bool):
                 self.gui = "check"
+            elif isinstance(self.value, tuple):
+                if len(self.value) == 2:
+                    self.gui = "range_slider"
 
 
-class Paramfunc:
-    def __init__(self, func):
-        pass
+# TODO a default-argument-value wrapper for parametrized functions

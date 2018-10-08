@@ -1,7 +1,57 @@
 # Lightparam
 Another attempt at parameters in Python, built to satify requirements of Stytra:
 
-- [x] Automatic GUI building
-- [ ] Parametrized functions
-- [x] Global parameter tree structure
-- [x] Saving and restoring
+- Automatic GUI building
+- Global parameter tree structure
+- Parametrized functions
+- Saving and restoring
+
+## Basic classes
+
+### Param
+The basic parameter object. The value can be of any python type,
+ although automatic GUI generation is supported for some:
+ ```
+ int
+ float
+ lists
+ str
+ ```
+
+### Parametrized
+Class where some parameters are attributes. Their values are acessible
+with the dot syntax, and the parameter objects themselves thorugh the params
+attribute:
+```python
+class MyParametrized(Parametrized):
+    def __init__(self):
+        super().__init__()
+        self.x = Param(1.0, (0.0, 2.0))
+        
+>>> o = MyParametrized()
+>>> o.x
+1.0
+>>> o.params.x.limits
+(0.0, 2.0)
+
+```
+
+### ParameterTree
+
+## GUI building
+Currently, automatic GUI generation is supported for PyQt5, ipywidget support is upcoming
+
+
+## Parametrizing functions
+Arguments of functions can be parametrized by annotaning their arguments using the Python 3 function annotation syntax.
+For example:
+```python
+def func(x : Param(1.0)):
+    print(x)
+```
+
+one can easily make parametrized objects out of it
+
+```python
+p = Parametrized(params=func)
+```
