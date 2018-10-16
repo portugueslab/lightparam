@@ -31,9 +31,9 @@ class ParameterGui(QWidget):
             self.param_widgets[name] = widget
             self.inner_layout.addWidget(widget)
 
-    def make_widget(self, parametrized, name):
+    @staticmethod
+    def make_widget(parametrized, name):
         gui_type = parametrized.params[name].gui
-        print(gui_type)
         if gui_type is None:
             return
         try:

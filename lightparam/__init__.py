@@ -153,6 +153,3 @@ class Param:
                     self.gui = "range_slider"
         elif gui is False:
             self.gui = None
-
-
-# TODO a default-argument-value wrapper for parametrized functions
