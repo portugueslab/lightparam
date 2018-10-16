@@ -33,6 +33,7 @@ class ParameterGui(QWidget):
 
     def make_widget(self, parametrized, name):
         gui_type = parametrized.params[name].gui
+        print(gui_type)
         if gui_type is None:
             return
         try:
@@ -42,6 +43,7 @@ class ParameterGui(QWidget):
                 "Trying to build gui for an unsupported type ",
                 parametrized.params[name].gui,
             )
+
 
 class TestParametrized(Parametrized):
     def __init__(self):
