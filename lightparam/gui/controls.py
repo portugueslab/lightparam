@@ -29,6 +29,9 @@ class Control(QWidget):
         self.param_name = name
         self.label = QLabel(pretty_name(name))
 
+    def update_param(self):
+        self.parametrized.params[self.param_name].changed = True
+
 
 class ControlSpin(Control):
     def __init__(self, parametrized, name):
@@ -54,6 +57,7 @@ class ControlSpin(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
+        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.value())
 
 
@@ -73,6 +77,7 @@ class ControlCheck(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
+        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.isChecked())
 
 
@@ -90,12 +95,12 @@ class ControlCombo(Control):
         self.layout().addWidget(self.control)
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.control.currentTextChanged.connect(self.update_param)
-        self.control.setEditable(self.param.editable)
 
     def update_display(self):
         self.control.setCurrentText(str(self.param.value))
 
     def update_param(self):
+        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.currentText())
 
 
@@ -117,93 +122,14 @@ class ControlText(Control):
         self.control.setText(str(self.param.value))
 
     def update_param(self):
+        super().update_param()
         setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
 
 
-class ParameterControl(QWidget):
-    """
-    Class for the single parameters controls of the metadata GUI
-    """
-
-    def __init__(self, parameterized_obj, name, *args, **kwargs):
-        """ Constructor
-        :param parameterized_obj: parameterized object containing the desired parameter
-        :param name: name of the parameter (string)
-        """
-        # Note: here the parameterized object has to be passed because the
-        # parameter object itself seems not to contain its current value,
-        # only the default one.
-
-        super().__init__(*args, **kwargs)
-        parameter_obj = parameterized_obj.params(name)
-        assert isinstance(parameter_obj, param.Parameter)  # Check input
-
-        self.name = name
-        self.label = self._pretty_print(name)
-        self.parameter = parameter_obj
-        self.parameter_val = getattr(parameterized_obj, name)
-        self.layout = None
-        self.set_layout()
-        self.layout.setContentsMargins(0, 0, 0, 5)
-
-    def set_layout(self):
-        # Create layout and add label to the control:
-        self.layout = QVBoxLayout()
-
-        self.setLayout(self.layout)
-        self.widget_label = QLabel(self.label)
-        self.layout.addWidget(self.widget_label)
-
-        # Create control widget according to parameter type:
-        self.control_widget = self.create_control_widget()
-        self.layout.addWidget(self.control_widget)
-
-    def get_value(self):
-        pass
-
-    def create_control_widget(self):
-        pass
-
-    @staticmethod
-    def _pretty_print(s):
-        n = s.replace("_", " ")
-        n = n.capitalize()
-        return n
 
 
-class StaticControl(ParameterControl):
-    """ Widget for unmodifiable parameters
-    """
-
-    def create_control_widget(self):
-        control_widget = QLineEdit(str(self.parameter_val))
-        control_widget.setReadOnly(True)
-
-        # Display this widget in gray:
-        control_widget.setStyleSheet("background-color: gray")
-
-        return control_widget
-
-    def get_value(self):
-        return self.parameter_val
-
-
-class BooleanControl(ParameterControl):
-    """ Widget for booleans
-
-    """
-
-    def create_control_widget(self):
-        control_widget = QCheckBox()
-        control_widget.setChecked(self.parameter_val)
-
-        return control_widget
-
-    def get_value(self):
-        return self.control_widget.isChecked()
-
-
-class NumericControlSliderCombined(ParameterControl):
+# Old controls, to be put in
+class NumericControlSliderCombined:
     """ Widget for float parameters
     """
 
@@ -283,7 +209,7 @@ class NumericControlSliderCombined(ParameterControl):
         return self.get_numeric_value()
 
 
-class NumericControl(ParameterControl):
+class NumericControl:
     """ Widget for float parameters
     """
 
@@ -299,7 +225,7 @@ class NumericControl(ParameterControl):
         return float(self.control_widget.text())
 
 
-class NumericControlSlider(ParameterControl):
+class NumericControlSlider:
     """ Widget for float parameters
     """
 
@@ -333,48 +259,3 @@ class NumericControlSlider(ParameterControl):
         self.widget_label.setText(self.label + " {:.2f}".format(self.get_value()))
 
 
-class IntegerControl(ParameterControl):
-    """ Widget for integer parameters
-        """
-
-    def create_control_widget(self):
-        control_widget = QLineEdit(str(self.parameter_val))
-
-        # TODO Add validator
-        # validator = QIntValidator(*self.parameter.bounds)
-        # control_widget.setValidator(validator)
-        return control_widget
-
-    def get_value(self):
-        return int(self.control_widget.text())
-
-
-class StringControl(ParameterControl):
-    """ Widget for string parameters
-    """
-
-    def create_control_widget(self):
-        control_widget = QLineEdit(str(self.parameter_val))
-        return control_widget
-
-    def get_value(self):
-        return self.control_widget.text()
-
-
-class ListControl(ParameterControl):
-    """ Widget for listselect parameters
-    """
-
-    def create_control_widget(self):
-        control_widget = QComboBox()
-
-        if not self.parameter.check_on_set:
-            control_widget.setEditable(True)
-        # Add list and set default:
-        control_widget.addItems(self.parameter.objects)
-        control_widget.setCurrentIndex(control_widget.findText(self.parameter_val))
-
-        return control_widget
-
-    def get_value(self):
-        return self.control_widget.currentText()

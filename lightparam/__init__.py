@@ -136,7 +136,7 @@ class Param:
         self.gui = gui
         self.unit = unit
         self.scale = scale
-        self.editable = editable
+        self.changed = False
 
         # heuristics for gui
         if gui is None:

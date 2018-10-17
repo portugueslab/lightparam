@@ -4,14 +4,14 @@ from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt, pyqtSignal, QPointF, QPoint
 
 import math
-from lightparam.gui.controls import pretty_name
+from lightparam.gui.controls import pretty_name, Control
 
-class RangeSliderWidgetWithNumbers(QWidget):
+
+class RangeSliderWidgetWithNumbers(Control):
     sig_changed = pyqtSignal(float, float)
 
     def __init__(self, parametrized, name, precision=2):
-        super().__init__()
-        self.name = name
+        super().__init__(parametrized, name)
         self.grid_layout = QGridLayout()
         self.grid_layout.setSpacing(0)
         self.grid_layout.setContentsMargins(0, 0, 0, 0)
@@ -42,8 +42,6 @@ class RangeSliderWidgetWithNumbers(QWidget):
         self.setLayout(self.grid_layout)
         self.range_slider.sig_changed.connect(self.update_values)
 
-        self.param = parametrized.params[name]
-
     def update_values(self, l, r):
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
@@ -63,7 +61,7 @@ class RangeSliderWidgetWithNumbers(QWidget):
         self.sig_changed.emit(self.range_slider.left, self.range_slider.right)
 
     def update_display(self):
-        l, r = self.param.value
+        l, r = self.parametrized.value
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
         self.range_slider.left = l
@@ -71,6 +69,7 @@ class RangeSliderWidgetWithNumbers(QWidget):
         self.range_slider.update()
 
     def update_param(self):
+        super().update_param()
         setattr(self.parametrized, self.param_name, (self.left, self.right))
 
 
