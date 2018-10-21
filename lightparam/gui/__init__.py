@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QPushButton
 from lightparam.gui.controls import *
+from lightparam.gui.collapsible_widget import CollapsibleWidget
 from lightparam.gui.precisionslider import RangeSliderWidgetWithNumbers
-from lightparam import Parametrized, Param
+from lightparam import Parametrized, Param, ParameterTree
 
 gui_map = dict(
     spin=ControlSpin,
@@ -12,8 +13,24 @@ gui_map = dict(
 )
 
 
+class ParameterTreeGui(QWidget):
+    def __init__(self, param_tree):
+        super().__init__()
+        self.param_tree = param_tree
+        self.inner_layout = QVBoxLayout()
+
+        self.inner_layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.inner_layout)
+        self.paramtrized_widgets = {}
+
+        for name in self.param_tree.tracked.keys():
+            widget = ParameterGui(self.param_tree.tracked[name])
+            self.paramtrized_widgets[name] = widget
+            self.inner_layout.addWidget(CollapsibleWidget(widget, name=name))
+
+
 class ParameterGui(QWidget):
-    """ A QT gui for a parametrized class
+    """ A Qt gui for a parametrized class
 
     """
 
@@ -46,8 +63,8 @@ class ParameterGui(QWidget):
 
 
 class TestParametrized(Parametrized):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.an_int = Param(1)
         self.a_float = Param(1.0, (-1.0, 10.0))
         self.a_str = Param("strstr")
@@ -57,9 +74,10 @@ class TestParametrized(Parametrized):
 
 
 if __name__ == "__main__":
-    k = TestParametrized()
+    tree = ParameterTree()
+    k = TestParametrized(tree=tree, name='pino')
+    k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
-    print(k.params["a_str"])
-    p = ParameterGui(k)
+    p = ParameterTreeGui(tree)
     p.show()
     app.exec_()
