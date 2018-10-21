@@ -1,11 +1,55 @@
 from functools import reduce
 
-# TODO @Luigi please comment this a bit
+
 def get_nested(d, path):
+    """
+    Get value from a nested dictionary, addressing it via a list of keys
+    indicating the value to the path.
+
+    Example::
+
+        >>> d = dict(a=dict(a0=0, a1=1))
+        >>> get_nested(d, ['a', 'a1'])
+        1
+
+    If the path points to an undefined branch in the hierarchy, all required
+    nested keys are added to the dictionary and an empty dictionary is added
+    as value at that location.
+
+    Example:
+
+        >>> d = dict(a=dict(a0=0, a1=1))
+        >>> get_nested(d, ['a', 'a2', 'new_dict'])
+        >>> print(d)
+        {'a': {'a0': 0, 'a1': 1, 'a2': {'new_dict': {}}}}
+
+
+    :param d: nested dictionary to address;
+    :param path: list of keys forming the path to the required entry;
+    :return: entry from addressed path.
+        """
     return reduce(lambda d, k: d.setdefault(k, {}), path, d)
 
 
 def set_nested(d, path, value):
+    """
+    Set value in a nested dictionary in an arbitrary existing or new
+    posistion of the hierarchy.
+
+    Example::
+
+        >>> d = dict(a=dict(a0=0, a1=1))
+        >>> set_nested(d, ['a', 'a1'], 0)
+        >>> print(d)
+        {'a': {'a1': 0, 'a0': 0}}
+        >>> set_nested(d, ['a', 'a2', 'new_entry'], 2)
+        >>> print(d)
+        {'a': {'a1': 0, 'a2': {'new_entry': 2}, 'a0': 0}}
+
+    :param d: nested dictionary to address;
+    :param path: list of keys forming the path to the required entry;
+    :param value: value to be set;
+    """
     get_nested(d, path[:-1])[path[-1]] = value
 
 
@@ -77,7 +121,6 @@ class ParameterTree:
     def deserialize(self, restore_dict):
         for k, val in visit_dict(restore_dict):
             try:
-                # self.tracked['/'.join(k[:-1])].params[k[-1]].value = val
                 setattr(self.tracked["/".join(k[:-1])], k[-1], val)
             except KeyError:
                 pass
