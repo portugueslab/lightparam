@@ -36,6 +36,18 @@ class ParamContainer(object):
             if isinstance(param, Param)
         }
 
+    def changed_values(self):
+        return {
+            name: param.value
+            for name, param in self.parametrized.__dict__.items()
+            if isinstance(param, Param) and param.changed
+        }
+
+    def acknowledge_changes(self):
+        for name, param in self.parametrized.__dict__.items():
+            if isinstance(param, Param):
+                param.changed = False
+
     @values.setter
     def values(self, new_values):
         for key, val in new_values.items():
@@ -136,7 +148,7 @@ class Param:
         self.gui = gui
         self.unit = unit
         self.scale = scale
-        self.changed = False
+        self.changed = True
 
         # heuristics for gui
         if gui is None:
