@@ -12,6 +12,8 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QDoubleSpinBox,
     QHBoxLayout,
+    QPushButton,
+    QFileDialog
 )
 
 
@@ -126,6 +128,18 @@ class ControlText(Control):
         setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
 
 
+class ControlFolder(ControlText):
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
+        self.browse_btn = QPushButton("Browse")
+        self.browse_btn.clicked.connect(self.open_browse_wnd)
+        self.layout().addWidget(self.browse_btn)
+
+    def open_browse_wnd(self):
+        folder = QFileDialog.getExistingDirectory(caption='File to open',
+                                                  directory=None)
+        print(folder)
+        self.control.setText(folder)
 
 
 # Old controls, to be put in

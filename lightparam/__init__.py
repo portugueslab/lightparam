@@ -174,7 +174,8 @@ class Parametrized(object):
 
 class Param:
     def __init__(
-        self, value, limits=None, desc="", gui=None, unit="", scale=None, editable=False
+        self, value, limits=None, desc="", gui=None,
+        unit="", scale=None, editable=False
     ):
         """ A parameter
 
