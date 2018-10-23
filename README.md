@@ -16,6 +16,8 @@ The basic parameter object. The value can be of any python type,
  float
  lists
  str
+ range (a tuple of floats)
+ folder
  ```
 
 ### Parametrized
