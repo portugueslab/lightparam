@@ -138,7 +138,6 @@ class ControlFolder(ControlText):
     def open_browse_wnd(self):
         folder = QFileDialog.getExistingDirectory(caption='File to open',
                                                   directory=None)
-        print(folder)
         self.control.setText(folder)
 
 

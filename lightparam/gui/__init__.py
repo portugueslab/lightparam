@@ -52,7 +52,6 @@ class ParameterGui(QWidget):
     @staticmethod
     def make_widget(parametrized, name):
         gui_type = parametrized.params[name].gui
-        print(gui_type)
         if gui_type is None:
             return
         try:
