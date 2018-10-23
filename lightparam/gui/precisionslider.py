@@ -1,3 +1,7 @@
+""" A precision slider, designed after the Bauhaus sliders from the Darktable project
+
+"""
+
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGridLayout,\
     QDoubleSpinBox, QLabel, QGraphicsOpacityEffect
 from PyQt5.QtGui import QPainter, QColor, QPen
