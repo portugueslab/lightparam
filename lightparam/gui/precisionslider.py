@@ -21,9 +21,6 @@ class RangeSliderWidgetWithNumbers(Control):
         min_val, max_val = parametrized.params[name].limits
         self.left, self.right = parametrized.params[name].value
 
-        self.spin_left.setValue(self.left)
-        self.spin_right.setValue(self.right)
-
         for spin in [self.spin_right, self.spin_left]:
             spin.setRange(min_val, max_val)
             spin.setDecimals(precision)
@@ -42,26 +39,31 @@ class RangeSliderWidgetWithNumbers(Control):
         self.setLayout(self.grid_layout)
         self.range_slider.sig_changed.connect(self.update_values)
 
+        self.update_display()
+
     def update_values(self, l, r):
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
         self.sig_changed.emit(l, r)
         self.left, self.right = l, r
+        self.update_param()
 
     def update_slider_left(self, new_val):
         self.range_slider.left = new_val
         self.range_slider.update()
         self.left = new_val
         self.sig_changed.emit(self.range_slider.left, self.range_slider.right)
+        self.update_param()
 
     def update_slider_right(self, new_val):
         self.range_slider.right = new_val
         self.range_slider.update()
         self.right = new_val
         self.sig_changed.emit(self.range_slider.left, self.range_slider.right)
+        self.update_param()
 
     def update_display(self):
-        l, r = self.parametrized.value
+        l, r = self.param.value
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
         self.range_slider.left = l
