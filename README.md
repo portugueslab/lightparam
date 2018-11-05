@@ -1,5 +1,5 @@
 # Lightparam
-Another attempt at parameters in Python, built to satify requirements of Stytra:
+Another attempt at parameters in Python, built to satisfy requirements of Stytra:
 
 - Automatic GUI building
 - Global parameter tree structure
