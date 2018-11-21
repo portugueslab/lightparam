@@ -78,8 +78,8 @@ class TestParametrized(Parametrized):
 if __name__ == "__main__":
     tree = ParameterTree()
     k = TestParametrized(tree=tree, name='pino')
-    k1 = TestParametrized(tree=tree, name='gino')
+    # k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
-    p = ParameterGui(k1)
+    p = ParameterGui(k)
     p.show()
     app.exec_()
