@@ -120,15 +120,22 @@ class ParameterTree:
 
     def deserialize(self, restore_dict):
         for k, val in visit_dict(restore_dict):
-            try:
+            try:  # try to stop the signal:
                 self.tracked["/".join(k[:-1])].block_signal = True
-                try:
-                    setattr(self.tracked["/".join(k[:-1])], k[-1], val)
-                except KeyError:
-                    pass
-                self.tracked["/".join(k[:-1])].block_signal = False
-            except AttributeError:
+            except (KeyError, AttributeError):
                 pass
+
+            # Set the actual attribute:
+            try:
+                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+            except KeyError:
+                pass
+
+            try:  # try to stop the signal:
+                self.tracked["/".join(k[:-1])].block_signal = False
+            except (KeyError, AttributeError):
+                pass
+
 
     def serialize(self):
         new_dict = dict()
