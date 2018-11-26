@@ -9,6 +9,7 @@ gui_map = dict(
     check=ControlCheck,
     combo=ControlCombo,
     text=ControlText,
+    folder=ControlFolder,
     range_slider=RangeSliderWidgetWithNumbers,
 )
 
@@ -68,6 +69,7 @@ class TestParametrized(Parametrized):
         self.an_int = Param(1)
         self.a_float = Param(1.0, (-1.0, 10.0))
         self.a_str = Param("strstr")
+        self.a_folder = Param("", gui="folder")
         self.a_list = Param("a", ["a", "b", "c"])
         self.a_bool = Param(False)
         self.a_range = Param((0.5, 1.5), (0.0, 2.0))
@@ -76,8 +78,8 @@ class TestParametrized(Parametrized):
 if __name__ == "__main__":
     tree = ParameterTree()
     k = TestParametrized(tree=tree, name='pino')
-    k1 = TestParametrized(tree=tree, name='gino')
+    # k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
-    p = ParameterTreeGui(tree)
+    p = ParameterGui(k)
     p.show()
     app.exec_()

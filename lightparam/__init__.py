@@ -120,10 +120,22 @@ class ParameterTree:
 
     def deserialize(self, restore_dict):
         for k, val in visit_dict(restore_dict):
+            try:  # try to stop the signal:
+                self.tracked["/".join(k[:-1])].block_signal = True
+            except (KeyError, AttributeError):
+                pass
+
+            # Set the actual attribute:
             try:
                 setattr(self.tracked["/".join(k[:-1])], k[-1], val)
             except KeyError:
                 pass
+
+            try:  # try to stop the signal:
+                self.tracked["/".join(k[:-1])].block_signal = False
+            except (KeyError, AttributeError):
+                pass
+
 
     def serialize(self):
         new_dict = dict()
@@ -174,7 +186,8 @@ class Parametrized(object):
 
 class Param:
     def __init__(
-        self, value, limits=None, desc="", gui=None, unit="", scale=None, editable=False
+        self, value, limits=None, desc="", gui=None,
+        unit="", scale=None, editable=False
     ):
         """ A parameter
 

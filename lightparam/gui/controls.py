@@ -1,4 +1,3 @@
-import param
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QLineEdit,
@@ -12,8 +11,11 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QDoubleSpinBox,
     QHBoxLayout,
+    QPushButton,
+    QFileDialog
 )
 
+from math import log
 
 def pretty_name(paramname: str):
     pn = paramname.capitalize()
@@ -41,12 +43,17 @@ class ControlSpin(Control):
         else:
             self.control = QSpinBox()
         # if limits are set, put them in
-        self.control.setValue(self.param.value)
         try:
             self.control.setMinimum(self.param.limits[0])
             self.control.setMaximum(self.param.limits[1])
         except TypeError:
             pass
+
+        self.control.setValue(self.param.value)
+
+        if self.param.limits is not None and len(self.param.limits) > 2:
+            self.control.setDecimals(int(-round(log(self.param.limits[2])/log(10))))
+
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.control)
@@ -86,8 +93,8 @@ class ControlCombo(Control):
         super().__init__(parametrized, name)
         self.control = QComboBox()
 
-        self.control.setCurrentText(str(self.param.value))
         self.control.addItems([str(it) for it in self.param.limits])
+        self.control.setCurrentText(str(self.param.value))
 
         self.item_type = type(self.param.value)
         self.setLayout(QHBoxLayout())
@@ -126,6 +133,17 @@ class ControlText(Control):
         setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
 
 
+class ControlFolder(ControlText):
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
+        self.browse_btn = QPushButton("Browse")
+        self.browse_btn.clicked.connect(self.open_browse_wnd)
+        self.layout().addWidget(self.browse_btn)
+
+    def open_browse_wnd(self):
+        folder = QFileDialog.getExistingDirectory(caption='File to open',
+                                                  directory=None)
+        self.control.setText(folder)
 
 
 # Old controls, to be put in
