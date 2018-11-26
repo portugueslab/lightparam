@@ -1,4 +1,6 @@
 # Lightparam
+[![PyPI version](https://badge.fury.io/py/lightparam.svg)](https://pypi.org/project/lightparam/)
+
 Another attempt at parameters in Python, built to satisfy requirements of Stytra:
 
 - Automatic GUI building
