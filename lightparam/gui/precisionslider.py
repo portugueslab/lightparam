@@ -1,9 +1,14 @@
+""" Precision slider implementation based on ideas from the Darktable project
+
+"""
+
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGridLayout,\
     QDoubleSpinBox, QLabel, QGraphicsOpacityEffect
 from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt, pyqtSignal, QPointF, QPoint
 
 import math
+from lightparam import Param, Parametrized
 from lightparam.gui.controls import pretty_name, Control
 
 
@@ -118,16 +123,15 @@ class SliderWidgetWithNumbers(QWidget):
         self.slider.update()
 
 
+
 class SliderPopupLines(QWidget):
     """ A widget that displays the guiding lines for the fine adjustment
 
     """
 
-    def __init__(self, *args, magnifier_height, max_magnification, **kwargs):
+    def __init__(self, *args, f_line, **kwargs):
         super().__init__(*args, **kwargs)
-        self.magnifier_height = magnifier_height
-        self.max_magnification = max_magnification
-        self.square_coef = (1-1/self.max_magnification)/self.magnifier_height**1.5
+        self.f_line = f_line
         self.fadeub = QGraphicsOpacityEffect(self)
         self.current_value = 0
 
@@ -143,8 +147,6 @@ class SliderPopupLines(QWidget):
         halfw = w/2
 
         dy = 1
-
-        f = lambda y: 1/(1 - self.square_coef * min(y, self.magnifier_height) ** 1.5)
 
         qp = QPainter()
         qp.begin(self)
@@ -162,7 +164,7 @@ class SliderPopupLines(QWidget):
                 x_p = x_s
                 y_p = dy
                 for y in range(dy*2, h, dy):
-                    x = x_s*f(y)
+                    x = x_s*self.f_line(y)
                     qp.drawLine(x_p+halfw, y_p, x+halfw, y)
                     x_p = x
                     y_p = y
@@ -172,7 +174,7 @@ class SliderPopupLines(QWidget):
         y_p = 0
         qp.setPen(QColor(250, 250, 250))
         for y in range(dy, h, dy):
-            x = x_s * f(y)
+            x = x_s * self.f_line(y)
             qp.drawLine(x_p + halfw, y_p, x + halfw, y)
             x_p = x
             y_p = y
@@ -202,8 +204,7 @@ class PrecisionSlider(QWidget):
         self.mouse_start_x = 0
         self.mouse_start_y = 0
 
-        self.popup = SliderPopupLines(self, magnifier_height=magnifier_height,
-                                      max_magnification=max_magnification)
+        self.popup = SliderPopupLines(self, f_line=self.f_line)
         self.popup.setWindowFlags(
             Qt.Tool | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
         self.popup.setAttribute(Qt.WA_ShowWithoutActivating)
@@ -224,9 +225,23 @@ class PrecisionSlider(QWidget):
         self.drawWidget(qp)
         qp.end()
 
-    def amplification_fun(self, y):
+    def f_amp(self, y):
+        """ Function which maps a y position of the mouse to an amplification factor
+
+        :param y:
+        :return:
+        """
         # TODO a more reasonable one
         return 1-self.square_coef*min(y, self.magnifier_height) ** 1.5
+
+    def f_line(self, y):
+        """ Function that gives the
+
+        :param coef:
+        :param magnifier_height:
+        :return:
+        """
+        return 1 / (1 - self.square_coef * min(y, self.magnifier_height) ** 1.5)
 
     def val_to_vis(self, val):
         size = self.size()
@@ -324,7 +339,7 @@ class PrecisionSingleSlider(PrecisionSlider):
     def mouseMoveEvent(self, ev):
         x = ev.x()
         delta = x - self.mouse_start_x
-        amplification = self.amplification_fun(abs(ev.y()-self.mouse_start_y))
+        amplification = self.f_amp(abs(ev.y() - self.mouse_start_y))
 
         x_n = self.vis_to_val_relative(delta * amplification)
 
@@ -395,7 +410,6 @@ class RangeSliderWidget(PrecisionSlider):
 
             qp.drawPolygon(*map(lambda point: QPointF(*point), triangle))
 
-
     def mousePressEvent(self, ev):
         self.old_left = self.left
         self.old_right = self.right
@@ -441,7 +455,7 @@ class RangeSliderWidget(PrecisionSlider):
     def mouseMoveEvent(self, ev):
         x = ev.x()
         delta = x - self.mouse_start_x
-        amplification = self.amplification_fun(abs(ev.y()-self.mouse_start_y))
+        amplification = self.f_amp(abs(ev.y() - self.mouse_start_y))
 
         x_n = self.vis_to_val_relative(delta * amplification)
         if QApplication.instance().keyboardModifiers() == Qt.AltModifier:
@@ -464,16 +478,21 @@ class RangeSliderWidget(PrecisionSlider):
 
 if __name__ == '__main__':
     import qdarkstyle
+
+    class TestP(Parametrized):
+        def __init__(self):
+            super().__init__()
+            self.x = Param((1.0, 2.0), (0.0, 100.0))
+
     app = QApplication([])
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     win = QWidget()
     layout = QHBoxLayout()
     win.setLayout(layout)
-    slider_1 = RangeSliderWidgetWithNumbers(name='lateral')
-    slider_2 = RangeSliderWidgetWithNumbers(name='axial')
-    slider_3 = SliderWidgetWithNumbers(name='offset')
+
+    p = TestP()
+
+    slider_1 = RangeSliderWidgetWithNumbers(p, "x")
     layout.addWidget(slider_1)
-    layout.addWidget(slider_2)
-    layout.addWidget(slider_3)
     win.show()
     app.exec_()

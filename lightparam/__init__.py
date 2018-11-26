@@ -34,7 +34,7 @@ def get_nested(d, path):
 def set_nested(d, path, value):
     """
     Set value in a nested dictionary in an arbitrary existing or new
-    posistion of the hierarchy.
+    position of the hierarchy.
 
     Example::
 
@@ -182,7 +182,7 @@ class Param:
         :param limits: minimum and maximum
         :param desc: description of the parameter
         :param gui: preferred gui (spin, slider, combo)
-        :param unit: phyiscal unit, if existing
+        :param unit: physical unit, if existing
         :param scale: for real-valued parameters linear or logarithmic
         """
         self.value = value
