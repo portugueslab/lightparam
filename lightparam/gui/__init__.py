@@ -35,11 +35,12 @@ class ParameterGui(QWidget):
 
     """
 
-    def __init__(self, parameterized):
+    def __init__(self, parameterized, no_margin=False):
         super().__init__()
         self.parametrized = parameterized
         self.inner_layout = QVBoxLayout()
-        self.inner_layout.setContentsMargins(0, 0, 0, 0)
+        if no_margin:
+            self.inner_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.inner_layout)
         self.param_widgets = {}
         for name in self.parametrized.params.items().keys():
@@ -73,6 +74,7 @@ class TestParametrized(Parametrized):
         self.a_list = Param("a", ["a", "b", "c"])
         self.a_bool = Param(False)
         self.a_range = Param((0.5, 1.5), (0.0, 2.0))
+        self.a_different_bool = Param(True, gui=False)
 
 
 if __name__ == "__main__":
@@ -81,5 +83,10 @@ if __name__ == "__main__":
     # k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
     p = ParameterGui(k)
+    print("Was ist das?")
+    ti = ControlToggleIcon(parametrized=k, name="a_different_bool",
+                                                action_on="Turn off",
+                                                action_off="Turn on")
+    p.inner_layout.addWidget(ti)
     p.show()
     app.exec_()

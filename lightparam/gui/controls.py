@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
     QLineEdit,
     QWidget,
@@ -12,7 +12,8 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QHBoxLayout,
     QPushButton,
-    QFileDialog
+    QFileDialog,
+    QToolButton,
 )
 
 from math import log
@@ -85,6 +86,47 @@ class ControlCheck(Control):
         setattr(self.parametrized, self.param_name, self.control.isChecked())
 
 
+class ControlToggleIcon(QToolButton, Control):
+    """A toggle button for a boolean parameter"""
+    def __init__(self, parametrized, name, icon_on=None, icon_off=None, action_on=None, action_off=None, **kwargs):
+        super().__init__(parametrized=parametrized, name=name)
+        self.text_on = action_on or name+" off"
+        self.text_off = action_off or action_on or name+" on"
+        self.icon_on = icon_on
+        self.icon_off = icon_off or self.icon_on
+        current_text = self.text_on if self.param.value else self.text_off
+
+        print("Here")
+
+        if self.icon_on is None:
+            self.setText(current_text)
+        else:
+            self.setIcon(self.icon_on if self.param.value else self.icon_off)
+            self.setToolTip(current_text)
+            self.setFixedSize(QSize(48, 48))
+            self.setIconSize(QSize(32, 32))
+
+        self.setCheckable(True)
+        self.setChecked(self.param.value)
+        self.clicked.connect(self.update_param)
+
+    def update_param(self):
+        setattr(self.parametrized, self.param_name, not self.param.value)
+        self.update_display()
+
+    def update_display(self):
+        if self.icon_on is None:
+            self.setText(self.text_on if self.param.value else self.text_off)
+        else:
+            if not self.param.value:
+                self.setIcon(self.icon_off)
+                self.setChecked(False)
+            else:
+                self.setIcon(self.icon_on)
+                self.setChecked(True)
+            self.setToolTip(self.text_on if self.param.value else self.text_off)
+
+
 class ControlCombo(Control):
     def __init__(self, parametrized, name):
         super().__init__(parametrized, name)
@@ -141,7 +183,7 @@ class ControlFolder(ControlText):
         self.control.setText(folder)
 
 
-# Old controls, to be put in
+# Old controls, to be put back in the new framework
 class NumericControlSliderCombined:
     """ Widget for float parameters
     """

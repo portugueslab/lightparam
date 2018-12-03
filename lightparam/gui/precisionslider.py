@@ -12,7 +12,7 @@ from lightparam import Param, Parametrized
 from lightparam.gui.controls import pretty_name, Control
 
 
-class RangeSliderWidgetWithNumbers(Control):
+class RangeSliderWidgetWithNumbers(Control, QWidget):
     sig_changed = pyqtSignal(float, float)
 
     def __init__(self, parametrized, name, precision=2):
@@ -188,7 +188,7 @@ class SliderPopupLines(QWidget):
 
 
 class PrecisionSlider(QWidget):
-    def __init__(self, min=0.0, max=1.0, max_magnification=200, magnifier_height=200):
+    def __init__(self, min=0.0, max=1.0, max_magnification=50, magnifier_height=200):
         super().__init__()
 
         self.min_val = min
