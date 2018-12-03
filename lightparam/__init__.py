@@ -107,43 +107,6 @@ class ParamContainer(object):
         return self.parametrized.__dict__[item]
 
 
-class ParameterTree:
-    """ Class for managing a multi-level tree of parameters
-
-    """
-
-    def __init__(self):
-        self.tracked = dict()
-
-    def add(self, parametrized):
-        self.tracked[parametrized.name] = parametrized
-
-    def deserialize(self, restore_dict):
-        for k, val in visit_dict(restore_dict):
-            try:  # try to stop the signal:
-                self.tracked["/".join(k[:-1])].block_signal = True
-            except (KeyError, AttributeError):
-                pass
-
-            # Set the actual attribute:
-            try:
-                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
-            except KeyError:
-                pass
-
-            try:  # try to stop the signal:
-                self.tracked["/".join(k[:-1])].block_signal = False
-            except (KeyError, AttributeError):
-                pass
-
-
-    def serialize(self):
-        new_dict = dict()
-        for k in self.tracked.keys():
-            set_nested(new_dict, k.split("/"), self.tracked[k].params.values)
-        return new_dict
-
-
 class Parametrized(object):
     def __init__(self, name="", tree=None, params=None):
         """ Creates a parameterized class
@@ -221,3 +184,39 @@ class Param:
                     self.gui = "range_slider"
         elif gui is False:
             self.gui = None
+
+
+class ParameterTree:
+    """ Class for managing a multi-level tree of parameters
+
+    """
+
+    def __init__(self):
+        self.tracked = dict()
+
+    def add(self, parametrized):
+        self.tracked[parametrized.name] = parametrized
+
+    def deserialize(self, restore_dict):
+        for k, val in visit_dict(restore_dict):
+            try:  # try to stop the signal:
+                self.tracked["/".join(k[:-1])].block_signal = True
+            except (KeyError, AttributeError):
+                pass
+
+            # Set the actual attribute:
+            try:
+                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+            except KeyError:
+                pass
+
+            try:  # try to stop the signal:
+                self.tracked["/".join(k[:-1])].block_signal = False
+            except (KeyError, AttributeError):
+                pass
+
+    def serialize(self):
+        new_dict = dict()
+        for k in self.tracked.keys():
+            set_nested(new_dict, k.split("/"), self.tracked[k].params.values)
+        return new_dict
