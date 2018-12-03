@@ -88,7 +88,8 @@ class ControlCheck(Control):
 
 class ControlToggleIcon(QToolButton, Control):
     """A toggle button for a boolean parameter"""
-    def __init__(self, parametrized, name, icon_on=None, icon_off=None, action_on=None, action_off=None, **kwargs):
+    def __init__(self, parametrized, name, icon_on=None, icon_off=None,
+                 action_on=None, action_off=None, icon_size=32, **kwargs):
         super().__init__(parametrized=parametrized, name=name)
         self.text_on = action_on or name+" off"
         self.text_off = action_off or action_on or name+" on"
@@ -96,15 +97,14 @@ class ControlToggleIcon(QToolButton, Control):
         self.icon_off = icon_off or self.icon_on
         current_text = self.text_on if self.param.value else self.text_off
 
-        print("Here")
-
         if self.icon_on is None:
             self.setText(current_text)
         else:
             self.setIcon(self.icon_on if self.param.value else self.icon_off)
             self.setToolTip(current_text)
-            self.setFixedSize(QSize(48, 48))
-            self.setIconSize(QSize(32, 32))
+            bs = int(round(icon_size*1.5))
+            self.setFixedSize(QSize(bs, bs))
+            self.setIconSize(QSize(icon_size, icon_size))
 
         self.setCheckable(True)
         self.setChecked(self.param.value)
