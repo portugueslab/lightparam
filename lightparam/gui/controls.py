@@ -30,9 +30,8 @@ class Control(QWidget):
         self.param = parametrized.params[name]
         self.param_name = name
         self.label = QLabel(pretty_name(name))
-
-    def update_param(self):
-        self.parametrized.params[self.param_name].changed = True
+        if self.param.desc:
+            self.setToolTip(self.param.desc)
 
 
 class ControlSpin(Control):
@@ -64,7 +63,6 @@ class ControlSpin(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
-        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.value())
 
 
@@ -84,7 +82,6 @@ class ControlCheck(Control):
         self.control.setValue(self.param.value)
 
     def update_param(self):
-        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.isChecked())
 
 
@@ -107,7 +104,6 @@ class ControlCombo(Control):
         self.control.setCurrentText(str(self.param.value))
 
     def update_param(self):
-        super().update_param()
         setattr(self.parametrized, self.param_name, self.control.currentText())
 
 
@@ -129,7 +125,6 @@ class ControlText(Control):
         self.control.setText(str(self.param.value))
 
     def update_param(self):
-        super().update_param()
         setattr(self.parametrized, self.param_name, self.item_type(self.control.text()))
 
 

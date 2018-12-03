@@ -140,7 +140,10 @@ class Parametrized(object):
     def __setattr__(self, item, value):
         if hasattr(self, item):
             if isinstance(object.__getattribute__(self, item), Param):
+                old_val = object.__getattribute__(self, item).value
                 object.__getattribute__(self, item).value = value
+                if old_val != value:
+                    object.__getattribute__(self, item).changed = True
             else:
                 object.__setattr__(self, item, value)
         else:

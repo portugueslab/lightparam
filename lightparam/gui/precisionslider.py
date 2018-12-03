@@ -81,7 +81,6 @@ class RangeSliderWidgetWithNumbers(Control):
         self.range_slider.update()
 
     def update_param(self):
-        super().update_param()
         setattr(self.parametrized, self.param_name, (self.left, self.right))
 
 

@@ -13,8 +13,18 @@ class TestBasic(unittest.TestCase):
 
         tc = TC()
         assert tc.x == 1.0
-        assert tc.params.x.value == 1.0
-        assert tc.params["x"].value == 1.0
+        tc.x = 2.0
+        assert tc.x == 2.0
+        assert tc.params.x.changed
+        tc.params.acknowledge_changes()
+        assert not tc.params.x.changed
+        setattr(tc, "x", 3.0)
+        assert tc.x == 3.0
+        assert tc.params.x.changed
+        tc.params.acknowledge_changes()
+        assert not tc.params.x.changed
+        assert tc.params.x.value == 3.0
+        assert tc.params["x"].value == 3.0
 
 
 class TestTree(unittest.TestCase):
