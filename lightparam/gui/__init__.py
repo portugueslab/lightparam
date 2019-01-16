@@ -10,9 +10,9 @@ gui_map = dict(
     combo=ControlCombo,
     text=ControlText,
     folder=ControlFolder,
+    button=ControlButton,
     range_slider=RangeSliderWidgetWithNumbers,
 )
-
 
 class ParameterTreeGui(QWidget):
     def __init__(self, param_tree):

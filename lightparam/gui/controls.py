@@ -49,10 +49,10 @@ class ControlSpin(Control):
         except TypeError:
             pass
 
-        self.control.setValue(self.param.value)
-
         if self.param.limits is not None and len(self.param.limits) > 2:
             self.control.setDecimals(int(-round(log(self.param.limits[2])/log(10))))
+
+        self.control.setValue(self.param.value)
 
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self.label)
@@ -85,6 +85,19 @@ class ControlCheck(Control):
     def update_param(self):
         setattr(self.parametrized, self.param_name, self.control.isChecked())
 
+
+class ControlButton(Control):
+    def __init__(self, parametrized, name):
+        super().__init__(parametrized, name)
+        self.control = QPushButton(pretty_name(name))
+        self.setLayout(QHBoxLayout())
+        self.layout().addWidget(self.control)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.control.clicked.connect(self.update_param)
+
+    def update_param(self):
+        setattr(self.parametrized, self.param_name,
+                not getattr(self.parametrized, self.param_name))
 
 class ControlToggleIcon(QToolButton, Control):
     """A toggle button for a boolean parameter"""
