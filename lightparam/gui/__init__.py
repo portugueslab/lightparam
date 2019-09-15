@@ -52,6 +52,9 @@ class ParameterGui(QWidget):
 
     @staticmethod
     def make_widget(parametrized, name):
+        #print(name+":")
+        #print(parametrized.params[name].value)
+        #print(parametrized.params[name].gui)
         gui_type = parametrized.params[name].gui
         if gui_type is None:
             return
@@ -71,8 +74,8 @@ class TestParametrized(Parametrized):
         self.a_float = Param(1.0, (-1.0, 10.0))
         self.a_str = Param("strstr")
         self.a_folder = Param("", gui="folder")
-        self.a_list = Param("a", ["a", "b", "c"])
-        self.a_bool = Param(False)
+        self.a_list = Param("a", ["a", "b", "c"], editable=False)
+        self.a_bool = Param(False, editable=False)
         self.a_range = Param((0.5, 1.5), (0.0, 2.0))
         self.a_different_bool = Param(True, gui=False)
 
