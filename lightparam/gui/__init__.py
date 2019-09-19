@@ -83,7 +83,6 @@ if __name__ == "__main__":
     # k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
     p = ParameterGui(k)
-    print("Was ist das?")
     ti = ControlToggleIcon(parametrized=k, name="a_different_bool",
                                                 action_on="Turn off",
                                                 action_off="Turn on")

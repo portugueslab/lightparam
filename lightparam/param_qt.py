@@ -53,13 +53,12 @@ if __name__ == "__main__":
             self.b = Param(2.)
             self.c = Param(5)
             self.a_list = Param("a", ["a", "b", "c"])
-            self.sig_param_changed.connect(self.set_physical_scale)
+            self.sig_param_changed.connect(self.update_param)
             # self.show()
 
-        def set_physical_scale(self):
+        def update_param(self):
             """Calculate mm/px from calibrator length"""
             if self.c is not None:
-                # print(self.c)
                 self.block_signal = True
                 self.c = self.a / self.b
                 self.block_signal = False
