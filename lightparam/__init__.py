@@ -118,7 +118,10 @@ class Parametrized(object):
         super().__init__()
         self.name = name
 
+        # If there are params:
         if params is not None:
+            # If params is actually a function with params annotations,
+            # make dict:
             if callable(params):
                 params = params.__annotations__
 
@@ -128,24 +131,44 @@ class Parametrized(object):
 
         self.params = ParamContainer(self)
 
+        # If specified, add to a broader tree.
+        # Eventual restoring of default parameters happens here:
         if tree is not None:
             tree.add(self)
 
     def __getattribute__(self, item):
+        # If parameter is asked, return its value:
         if isinstance(object.__getattribute__(self, item), Param):
             return object.__getattribute__(self, item).value
         else:
             return object.__getattribute__(self, item)
 
     def __setattr__(self, item, value):
+        # If there is already an attribute by that name:
         if hasattr(self, item):
+
+            # If it is a parameter:
             if isinstance(object.__getattribute__(self, item), Param):
-                old_val = object.__getattribute__(self, item).value
-                object.__getattribute__(self, item).value = value
-                if old_val != value:
-                    object.__getattribute__(self, item).changed = True
+
+                # If we are replacing with a new parameter:
+                if isinstance(value, Param):
+                    # If we are over-writing a param with a param, replace all
+                    # its properties:
+                    for name, attr in value.__dict__.items():
+                        object.__getattribute__(self, item).__setattr__(name, attr)
+
+                # Else, just change the parameter value and signal change:
+                else:
+                    old_val = object.__getattribute__(self, item).value
+                    object.__getattribute__(self, item).value = value
+                    if old_val != value:
+                        object.__getattribute__(self, item).changed = True
+
+            # otherwise, just set:
             else:
                 object.__setattr__(self, item, value)
+
+        # otherwise, just set:
         else:
             object.__setattr__(self, item, value)
 
@@ -153,7 +176,7 @@ class Parametrized(object):
 class Param:
     def __init__(
         self, value, limits=None, desc="", gui=None,
-        unit="", scale=None, editable=False
+        unit="", scale=None, editable=True, loadable=True,
     ):
         """ A parameter
 
@@ -171,6 +194,8 @@ class Param:
         self.unit = unit
         self.scale = scale
         self.changed = True
+        self.editable = editable
+        self.loadable = loadable
 
         # heuristics for gui
         if gui is None:
@@ -198,27 +223,49 @@ class ParameterTree:
         self.tracked = dict()
 
     def add(self, parametrized):
+        """ Add new branched node to the tree.
+        :param parametrized:
+        :return:
+        """
         self.tracked[parametrized.name] = parametrized
 
     def deserialize(self, restore_dict):
+        """ Restore state of the tree based on contents of a restore_dict.
+        :param restore_dict: dictionary with the tree state to restore
+        :return:
+        """
         for k, val in visit_dict(restore_dict):
-            try:  # try to stop the signal:
-                self.tracked["/".join(k[:-1])].block_signal = True
-            except (KeyError, AttributeError):
-                pass
-
-            # Set the actual attribute:
             try:
-                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+                # Get current parameterized object, if present:
+                current = self.tracked["/".join(k[:-1])]
+                loadable = current.params.items()[k[-1]].loadable
+
+                # If we explicitly made the parameter not loadable from the restoring
+                # dictionary, skip. Skip also the restoring of the loadable
+                # attribute, which is not loadable itself:
+                if loadable and k[-1] != "loadable":
+                    # try to stop the signal of the parameter has one, to prevent
+                    # infinite loops:
+                    try:
+                        self.tracked["/".join(k[:-1])].block_signal = True
+                    except AttributeError:
+                        pass
+
+                    # Set the actual attribute, if possible:
+                    setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+
+                    # try to stop the signal if there is one:
+                    try:
+                        self.tracked["/".join(k[:-1])].block_signal = False
+                    except AttributeError:
+                        pass
+
             except KeyError:
                 pass
 
-            try:  # try to stop the signal:
-                self.tracked["/".join(k[:-1])].block_signal = False
-            except (KeyError, AttributeError):
-                pass
-
     def serialize(self):
+        """ Generate state dict that can be saved to restore the tree.
+        """
         new_dict = dict()
         for k in self.tracked.keys():
             set_nested(new_dict, k.split("/"), self.tracked[k].params.values)

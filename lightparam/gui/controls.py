@@ -34,6 +34,8 @@ class Control(QWidget):
         if self.param.desc:
             self.setToolTip(self.param.desc)
 
+        self.setEnabled(self.param.editable)
+
 
 class ControlSpin(Control):
     def __init__(self, parametrized, name):
@@ -59,6 +61,7 @@ class ControlSpin(Control):
         self.layout().addWidget(self.control)
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.control.valueChanged.connect(self.update_param)
+        self.control.setSuffix(" " + self.param.unit)
 
     def update_display(self):
         self.control.setValue(self.param.value)
@@ -100,7 +103,8 @@ class ControlButton(Control):
                 not getattr(self.parametrized, self.param_name))
 
 class ControlToggleIcon(QToolButton, Control):
-    """A toggle button for a boolean parameter"""
+    """A toggle button for a boolean parameter.
+    """
     def __init__(self, parametrized, name, icon_on=None, icon_off=None,
                  action_on=None, action_off=None, icon_size=32, **kwargs):
         super().__init__(parametrized=parametrized, name=name)
