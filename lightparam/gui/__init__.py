@@ -52,9 +52,6 @@ class ParameterGui(QWidget):
 
     @staticmethod
     def make_widget(parametrized, name):
-        #print(name+":")
-        #print(parametrized.params[name].value)
-        #print(parametrized.params[name].gui)
         gui_type = parametrized.params[name].gui
         if gui_type is None:
             return
@@ -83,7 +80,6 @@ class TestParametrized(Parametrized):
 if __name__ == "__main__":
     tree = ParameterTree()
     k = TestParametrized(tree=tree, name='pino')
-    # k1 = TestParametrized(tree=tree, name='gino')
     app = QApplication([])
     p = ParameterGui(k)
     ti = ControlToggleIcon(parametrized=k, name="a_different_bool",

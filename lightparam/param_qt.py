@@ -72,18 +72,4 @@ if __name__ == "__main__":
 
     p = ParameterGui(TestParametrized1())
     p.show()
-    #
-    # tree = ParameterTree()
-    # paramtrized1 = TestParametrized1(tree=tree)
-    # paramtrized2 = TestParametrized2(tree=tree)
-    # dict1 = tree.serialize()
-    # # print(dict1)
-    # # paramtrized1.block_signal = True
-    # print("setting a")
-    # paramtrized1.a = 10
-    # # paramtrized1.block_signal = False
-    # print(tree.serialize())
-    # # paramtrized1.a = 5
-    # # tree.deserialize(dict1)
-    # # print(tree.serialize())
     app.exec_()
