@@ -87,7 +87,8 @@ class RangeSliderWidgetWithNumbers(Control, QWidget):
 class SliderWidgetWithNumbers(QWidget):
     sig_changed = pyqtSignal(float)
 
-    def __init__(self, min=0.0, max=1.0, name='', value=None):
+    def __init__(self, min=0.0, max=1.0, name='',
+                 decimals=4, step=0.001, value=None):
         super().__init__()
         self.name = name
         self.grid_layout = QGridLayout()
@@ -100,8 +101,8 @@ class SliderWidgetWithNumbers(QWidget):
         self.spin_val.setValue(value)
 
         self.spin_val.setRange(min, max)
-        self.spin_val.setDecimals(4)
-        self.spin_val.setSingleStep(0.001)
+        self.spin_val.setDecimals(decimals)
+        self.spin_val.setSingleStep(step)
 
         self.spin_val.valueChanged.connect(self.update_slider)
 
