@@ -64,20 +64,20 @@ class ParameterGui(QWidget):
             )
 
 
-class TestParametrized(Parametrized):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.an_int = Param(1)
-        self.a_float = Param(1.0, (-1.0, 10.0))
-        self.a_str = Param("strstr")
-        self.a_folder = Param("", gui="folder")
-        self.a_list = Param("a", ["a", "b", "c"], editable=False)
-        self.a_bool = Param(False, editable=False)
-        self.a_range = Param((0.5, 1.5), (0.0, 2.0))
-        self.a_different_bool = Param(True, gui=False)
-
-
 if __name__ == "__main__":
+    class TestParametrized(Parametrized):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.an_int = Param(1)
+            self.a_float = Param(1.0, (-1.0, 10.0))
+            self.a_str = Param("strstr")
+            self.a_folder = Param("", gui="folder")
+            self.a_list = Param("a", ["a", "b", "c"], editable=False)
+            self.a_bool = Param(False, editable=False)
+            self.a_range = Param((0.5, 1.5), (0.0, 2.0))
+            self.a_different_bool = Param(True, gui=False)
+
+
     tree = ParameterTree()
     k = TestParametrized(tree=tree, name='pino')
     app = QApplication([])
