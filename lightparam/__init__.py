@@ -1,4 +1,5 @@
 from functools import reduce
+from .param_traits import HasTraitsLinked
 
 
 def get_nested(d, path):
@@ -192,6 +193,9 @@ class Parametrized(object):
         # otherwise, just set:
         else:
             object.__setattr__(self, item, value)
+
+    def as_hastraits(self):
+        return HasTraitsLinked(self)
 
 
 class Param:
