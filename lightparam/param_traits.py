@@ -96,6 +96,10 @@ class HasTraitsLinked(HasTraits):
                 val = val[0]
             setattr(self, k, val)
 
+    @property
+    def values(self):
+        return {k: getattr(self, k) for k in self.trait_names()}
+
             # self.observe(self.trait_changed, k)
 
             # @staticmethod
@@ -104,7 +108,7 @@ class HasTraitsLinked(HasTraits):
             #    print(trait_change)
 
 
-class FXWidgetView:
+class HasTraitsWidgetView:
     def __init__(self, has_traits):
         self.has_traits = has_traits
 
