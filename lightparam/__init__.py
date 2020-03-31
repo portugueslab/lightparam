@@ -61,6 +61,23 @@ def visit_dict(d, path=[]):
             yield from visit_dict(v, path + [k])
 
 
+class IterParamContainer:
+    def __init__(self, param_container):
+        self._params = param_container.items()
+        self._keys = list(self._params)
+        self._index = 0
+
+    def __next__(self):
+        if self._index < len(self._keys):
+            k = self._keys[self._index]
+            par = self._params[k]
+
+            self._index += 1
+            return k, par
+
+        raise StopIteration
+
+
 class ParamContainer(object):
     def __init__(self, p):
         self.parametrized = p
@@ -105,6 +122,10 @@ class ParamContainer(object):
 
     def __getitem__(self, item):
         return self.parametrized.__dict__[item]
+
+    def __iter__(self):
+        """Returns the Iterator object"""
+        return IterParamContainer(self)
 
 
 class Parametrized(object):
