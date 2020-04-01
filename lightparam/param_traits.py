@@ -69,32 +69,37 @@ widgets_dict = {Int: TraitWidgInt,
 
 
 class HasTraitsLinked(HasTraits):
+    """ API class that instantiate itself as an HasTraits object from a
+    Parametrized class.
+    Note that (currently) once it is created it does not
+    change the values of the Parametrized object it was created from!
+    """
     def __init__(self, parametrized):
         self.params = parametrized.params
+
+        # Loop over params and add traits using some heuristics on the Param
+        # object value type, and convert arguments
         for k, par in self.params:
-            attrs = [p for p in dir(par) if p[0] is not "_"]
-            kwargs = dict(name=k, value=par.value, values=None)
-
-            if type(par.value) == list:
-                kwargs["values"] = par.limits
-                kwargs["default_value"] = par.value
-            elif type(par.value) == float or type(par.value) == int:
-                if par.limits is not None:
-                    (kwargs["min"], kwargs["max"]) = par.limits
-
-            # Traitles 4.1 ask to set metadata via the tag syntax:
-            if type(par.value) == list:
-                trait = traits_dict[type(par.value)](values=kwargs["values"])
-            else:
-                trait = traits_dict[type(par.value)](**kwargs)
-
-            self.add_traits(**{k: trait})
 
             # Ugly trick as par.value for Enum is a list that can't be set as attribute:
             val = par.value
             if type(val) == list:
                 val = val[0]
-            setattr(self, k, val)
+
+            kwargs = dict(name=k, default_value=val, values=None)
+            if type(par.value) == list:
+                kwargs["values"] = par.limits
+            elif type(par.value) == float or type(par.value) == int:
+                if par.limits is not None:
+                    (kwargs["min"], kwargs["max"]) = par.limits
+
+            # Use dictionary to get correct traits type:
+            trait_type = traits_dict[type(par.value)]
+
+            #
+            trait = trait_type(**kwargs)
+            self.add_traits(**{k: trait})
+
 
     @property
     def values(self):
