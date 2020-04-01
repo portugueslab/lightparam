@@ -88,9 +88,15 @@ class HasTraitsWidgetView:
         display(self.ipyview)
 
 
-class ParameterWidget(Parametrized):
+class ParametersWidget(Parametrized):
+    """  Small messy class to generate effortlessly the parameter widget for
+    a given function that has parametrized argument.
+    """
     def __init__(self, params, **kwargs):
+        # Generate Parametrized class:
         super().__init__(params=params, **kwargs)
+
+        # Derive HasTraits class and the view:
         self.has_traits_linked = self.as_hastraits()
         self.view = HasTraitsWidgetView(self.has_traits_linked)
 
@@ -99,3 +105,6 @@ class ParameterWidget(Parametrized):
     @property
     def values(self):
         return self.has_traits_linked.values
+
+    def _ipython_display_(self):
+        display(self.view.ipyview)
