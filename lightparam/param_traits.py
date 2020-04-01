@@ -1,71 +1,29 @@
-from traitlets import link, observe
-from IPython.display import display
-from lightparam.utils import pretty_name
+from traitlets import HasTraits, Float, observe, Enum, Int, Bool, \
+    Tuple, Unicode, TraitType
 
-from traitlets import HasTraits, Float, observe, Enum, Int, Bool, Tuple
-from ipywidgets import IntSlider, FloatSlider, Checkbox, FloatRangeSlider, \
-    Combobox, VBox, HBox, HTML, Dropdown
+class FloatRange(TraitType):
+    """A trait for an (ip, port) tuple.
 
-traits_dict = {int: Int,
-               float: Float,
-               list: Enum,
-               bool: Bool}
-
-
-class TraitWidg(HBox):
-    """ Little horizontal box with label and control for a parameter.
+    This allows for both IPv4 IP addresses as well as hostnames.
     """
-    def __init__(self, has_traits, name):
-        self.has_traits = has_traits
-        trait = has_traits.traits()[name]
 
-        lab = HTML(f"{pretty_name(name)}:")
-        widg = self.make_widg(trait, getattr(self.has_traits, trait.name))
-        link((has_traits, name), (widg, 'value'))
+    default_value = (0.5, 0.6)
+    min = 0
+    max = 1
 
-        super().__init__([lab, widg])
+    def __init__(self, *args, min=0, max=1, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.min = min
+        self.max = max
 
-    def make_widg(self, trait):
-        pass
-
-
-class TraitWidgInt(TraitWidg):
-    """ Control for an integer (slider).
-    """
-    def make_widg(self, trait, val):
-        return IntSlider(value=val,
-                         min=trait.min, max=trait.max)
-
-
-class TraitWidgFloat(TraitWidg):
-    """ Control for a float (slider).
-    """
-    def make_widg(self, trait, val):
-        return FloatSlider(value=val,
-                           min=trait.min, max=trait.max,
-                           step=((trait.max - trait.min) / 200))
-
-
-class TraitWidgCombo(TraitWidg):
-    """ Control for"""
-    def make_widg(self, trait, val):
-        return Dropdown(value=val[0], options=trait.values)
-
-
-class TraitWidgCheck(TraitWidg):
-    def make_widg(self, trait, val):
-        return Checkbox(value=val)
-
-
-class TraitWidgRange(TraitWidg):
-    def make_widg(self, trait, val):
-        return FloatRangeSlider(value=val)
-
-
-widgets_dict = {Int: TraitWidgInt,
-                Float: TraitWidgFloat,
-                Enum: TraitWidgCombo,
-                Bool: TraitWidgCheck}
+    def validate(self, obj, value):
+        if isinstance(value, tuple):
+            if len(value) == 2:
+                if value[0] <= value[1]:
+                    if value[0] >= self.min:
+                        if value[1] <= self.max:
+                            return value
+        self.error(obj, value)
 
 
 class HasTraitsLinked(HasTraits):
@@ -80,23 +38,37 @@ class HasTraitsLinked(HasTraits):
         # Loop over params and add traits using some heuristics on the Param
         # object value type, and convert arguments
         for k, par in self.params:
-
             # Ugly trick as par.value for Enum is a list that can't be set as attribute:
             val = par.value
             if type(val) == list:
                 val = val[0]
 
             kwargs = dict(name=k, default_value=val, values=None)
-            if type(par.value) == list:
+
+            # heuristics for trait type to use
+            if isinstance(par.limits, list):
+                trait_type = Enum
                 kwargs["values"] = par.limits
-            elif type(par.value) == float or type(par.value) == int:
+            elif isinstance(par.value, bool):
+                trait_type = Bool
+            elif isinstance(par.value, int):
                 if par.limits is not None:
                     (kwargs["min"], kwargs["max"]) = par.limits
+                trait_type = Int
+            elif isinstance(par.value, float):
+                if par.limits is not None:
+                    (kwargs["min"], kwargs["max"]) = par.limits
+                trait_type = Float
+            elif isinstance(par.value, str):
+                trait_type = Unicode
+            elif isinstance(par.value, tuple):
+                if par.limits is not None:
+                    (kwargs["min"], kwargs["max"]) = par.limits
+                trait_type = FloatRange
+            else:
+                raise TypeError(
+                    f"Param {k} does not have a matching Trait type!")
 
-            # Use dictionary to get correct traits type:
-            trait_type = traits_dict[type(par.value)]
-
-            #
             trait = trait_type(**kwargs)
             self.add_traits(**{k: trait})
 
@@ -111,18 +83,3 @@ class HasTraitsLinked(HasTraits):
             # def trait_changed(trait_change):
             #    self.params[trait_change["name"]].value = trait_change["new"]
             #    print(trait_change)
-
-
-class HasTraitsWidgetView:
-    def __init__(self, has_traits):
-        self.has_traits = has_traits
-
-        box_list = []
-        for k, trait in has_traits.traits().items():
-            widg = widgets_dict[type(trait)](has_traits, k)
-            box_list.append(widg)
-
-        self.ipyview = VBox(box_list)
-
-    def _ipython_display_(self):
-        display(self.ipyview)
