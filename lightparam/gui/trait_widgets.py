@@ -1,15 +1,15 @@
-from traitlets import link, observe
-from IPython.display import display
 from lightparam.utils import pretty_name
+from lightparam.param_traits import FloatRange
+from lightparam import Parametrized
+
+from IPython.display import display
 from ipywidgets import IntSlider, FloatSlider, Checkbox, FloatRangeSlider, \
-    Combobox, VBox, HBox, HTML, Dropdown
-from traitlets import HasTraits, Float, observe, Enum, Int, Bool, \
-    Tuple, Unicode, TraitType
-from ..param_traits import FloatRange, HasTraitsLinked
-from .. import Parametrized
+    VBox, HBox, HTML, Dropdown
+from traitlets import link, observe, Float, Enum, Int, Bool, Unicode
+
 
 class TraitWidg(HBox):
-    """ Little horizontal box with label and control for a parameter.
+    """ Little horizontal box with control for a parameter.
     """
     def __init__(self, has_traits, name):
         self.has_traits = has_traits
@@ -41,25 +41,30 @@ class TraitWidgFloat(TraitWidg):
                            step=((trait.max - trait.min) / 200))
 
 
-class TraitWidgCombo(TraitWidg):
-    """ Control for"""
+class TraitWidgDropdown(TraitWidg):
+    """ Control for an multiple choice dropdown.
+    """
     def make_widg(self, trait, val):
         return Dropdown(value=val[0], options=trait.values)
 
 
 class TraitWidgCheck(TraitWidg):
+    """ Control for a boolean value (checkbox).
+    """
     def make_widg(self, trait, val):
         return Checkbox(value=val)
 
 
 class TraitWidgFloatRange(TraitWidg):
+    """ Control for a float range (with range slider).
+    """
     def make_widg(self, trait, val):
         return FloatRangeSlider(value=val, min=trait.min, max=trait.max,
                                 step=(trait.max - trait.min) / 200)
 
 widgets_dict = {Int: TraitWidgInt,
                 Float: TraitWidgFloat,
-                Enum: TraitWidgCombo,
+                Enum: TraitWidgDropdown,
                 Bool: TraitWidgCheck,
                 FloatRange: TraitWidgFloatRange}
 
@@ -75,13 +80,15 @@ class HasTraitsWidgetView:
         widg_box_list = []
         for k, trait in has_traits.traits().items():
             try:
-                widg = widgets_dict[type(trait)](has_traits, k)
-                widg_box_list.append(widg)
+                widg_type = widgets_dict[type(trait)]
+                widg_box_list.append(widg_type(has_traits, k))
 
                 lab_list.append(HTML(f"{pretty_name(k)}:"))
             except KeyError:
                 print(f"No control available for control for trait '{k}'")
 
+        # Assemble the control box with a vertical layout with labels and
+        # one with controls:
         self.ipyview = HBox([VBox(lab_list), VBox(widg_box_list)])
 
     def _ipython_display_(self):
@@ -91,6 +98,11 @@ class HasTraitsWidgetView:
 class ParametersWidget(Parametrized):
     """  Small messy class to generate effortlessly the parameter widget for
     a given function that has parametrized argument.
+    Minimal usage example:
+    >>> from lightparam.gui.trait_widgets import ParametersWidget
+    >>> from fimpy.roi_extraction.correlation_flooding import grow_rois
+    >>> params = ParametersWidget(grow_rois)
+    >>> params.values
     """
     def __init__(self, params, **kwargs):
         # Generate Parametrized class:
