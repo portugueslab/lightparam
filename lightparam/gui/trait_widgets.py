@@ -5,7 +5,8 @@ from ipywidgets import IntSlider, FloatSlider, Checkbox, FloatRangeSlider, \
     Combobox, VBox, HBox, HTML, Dropdown
 from traitlets import HasTraits, Float, observe, Enum, Int, Bool, \
     Tuple, Unicode, TraitType
-from ..param_traits import FloatRange
+from ..param_traits import FloatRange, HasTraitsLinked
+from .. import Parametrized
 
 class TraitWidg(HBox):
     """ Little horizontal box with label and control for a parameter.
@@ -64,6 +65,9 @@ widgets_dict = {Int: TraitWidgInt,
 
 
 class HasTraitsWidgetView:
+    """ Class that generates a panel of notebook widgets for an HasTraitsLinked
+    object.
+    """
     def __init__(self, has_traits):
         self.has_traits = has_traits
 
@@ -82,3 +86,16 @@ class HasTraitsWidgetView:
 
     def _ipython_display_(self):
         display(self.ipyview)
+
+
+class ParameterWidget(Parametrized):
+    def __init__(self, params, **kwargs):
+        super().__init__(params=params, **kwargs)
+        self.has_traits_linked = self.as_hastraits()
+        self.view = HasTraitsWidgetView(self.has_traits_linked)
+
+        display(self.view.ipyview)
+
+    @property
+    def values(self):
+        return self.has_traits_linked.values
