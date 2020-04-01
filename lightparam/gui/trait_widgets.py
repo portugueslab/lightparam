@@ -14,11 +14,10 @@ class TraitWidg(HBox):
         self.has_traits = has_traits
         trait = has_traits.traits()[name]
 
-        lab = HTML(f"{pretty_name(name)}:")
         widg = self.make_widg(trait, getattr(self.has_traits, trait.name))
         link((has_traits, name), (widg, 'value'))
 
-        super().__init__([lab, widg])
+        super().__init__([widg])
 
     def make_widg(self, trait):
         pass
@@ -68,15 +67,18 @@ class HasTraitsWidgetView:
     def __init__(self, has_traits):
         self.has_traits = has_traits
 
-        box_list = []
+        lab_list = []
+        widg_box_list = []
         for k, trait in has_traits.traits().items():
             try:
                 widg = widgets_dict[type(trait)](has_traits, k)
-                box_list.append(widg)
+                widg_box_list.append(widg)
+
+                lab_list.append(HTML(f"{pretty_name(k)}:"))
             except KeyError:
                 print(f"No control available for control for trait '{k}'")
 
-        self.ipyview = VBox(box_list)
+        self.ipyview = HBox([VBox(lab_list), VBox(widg_box_list)])
 
     def _ipython_display_(self):
         display(self.ipyview)
