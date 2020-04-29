@@ -17,11 +17,7 @@ from PyQt5.QtWidgets import (
 )
 
 from math import log
-
-def pretty_name(paramname: str):
-    pn = paramname.capitalize()
-    pn = pn.replace("_", " ")
-    return pn
+from..utils import pretty_name
 
 
 class Control(QWidget):
@@ -101,6 +97,7 @@ class ControlButton(Control):
     def update_param(self):
         setattr(self.parametrized, self.param_name,
                 not getattr(self.parametrized, self.param_name))
+
 
 class ControlToggleIcon(QToolButton, Control):
     """A toggle button for a boolean parameter.
