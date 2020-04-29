@@ -43,7 +43,7 @@ class MyParametrized(Parametrized):
 ### ParameterTree
 
 ## GUI building
-Currently, automatic GUI generation is supported for PyQt5, ipywidget support is upcoming
+Currently, automatic GUI generation is supported for PyQt5 and for ipywidget support.
 
 
 ## Parametrizing functions

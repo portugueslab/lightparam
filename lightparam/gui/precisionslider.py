@@ -87,22 +87,27 @@ class RangeSliderWidgetWithNumbers(Control, QWidget):
 class SliderWidgetWithNumbers(QWidget):
     sig_changed = pyqtSignal(float)
 
-    def __init__(self, min=0.0, max=1.0, name='',
-                 decimals=4, step=0.001, value=None):
+    def __init__(self, parametrized, name):
         super().__init__()
-        self.name = name
+        self.parametrized = parametrized
+        self.param_name = name
+
         self.grid_layout = QGridLayout()
         self.grid_layout.setSpacing(0)
         self.grid_layout.setContentsMargins(0,0,0,0)
 
         self.spin_val = QDoubleSpinBox()
-        if value is None:
-            value = min+max/2
-        self.spin_val.setValue(value)
+        self.value = parametrized.params[name].value
+        min_val, max_val = parametrized.params[name].limits
 
-        self.spin_val.setRange(min, max)
-        self.spin_val.setDecimals(decimals)
-        self.spin_val.setSingleStep(step)
+        if self.value is None:
+            self.value = (min_val+max_val)/2
+        self.spin_val.setValue(self.value)
+
+        self.spin_val.setRange(min_val, max_val)
+        self.spin_val.setDecimals(4)
+        self.spin_val.setSingleStep(0.001)
+
 
         self.spin_val.valueChanged.connect(self.update_slider)
 
@@ -110,24 +115,31 @@ class SliderWidgetWithNumbers(QWidget):
         self.label_name.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.grid_layout.addWidget(self.label_name, 0, 0)
         self.grid_layout.addWidget(self.spin_val, 0, 1)
-        self.slider = PrecisionSingleSlider(min, max, default_value=value)
+        self.slider = PrecisionSingleSlider(min_val, max_val, default_value=self.value)
         self.grid_layout.addWidget(self.slider, 1, 0, 1, 2)
         self.setLayout(self.grid_layout)
         self.slider.sig_changed.connect(self.update_values)
 
     def update_values(self, val):
         self.spin_val.setValue(val)
+        self.value = val
         self.sig_changed.emit(val)
+        self.update_param()
 
     def update_slider(self, new_val):
         self.slider.pos = new_val
         self.slider.update()
+        self.value = new_val
         self.sig_changed.emit(new_val)
+        self.update_param()
 
     def update_external(self, new_val):
         self.slider.pos = new_val
         self.spin_val.setValue(new_val)
         self.slider.update()
+
+    def update_param(self):
+        setattr(self.parametrized, self.param_name, self.value)
 
 
 class SliderPopupLines(QWidget):

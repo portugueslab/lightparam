@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 from lightparam.gui.controls import *
 from lightparam.gui.collapsible_widget import CollapsibleWidget
-from lightparam.gui.precisionslider import RangeSliderWidgetWithNumbers
+from lightparam.gui.precisionslider import RangeSliderWidgetWithNumbers, SliderWidgetWithNumbers
 from lightparam import Parametrized, Param, ParameterTree
 
 gui_map = dict(
@@ -11,6 +11,7 @@ gui_map = dict(
     text=ControlText,
     folder=ControlFolder,
     button=ControlButton,
+    slider=SliderWidgetWithNumbers,
     range_slider=RangeSliderWidgetWithNumbers,
 )
 
