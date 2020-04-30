@@ -79,7 +79,7 @@ class RangeSliderWidgetWithNumbers(Control, QWidget):
         self.update_param()
 
     def update_display(self):
-        l, r = self.param.value
+        l, r = getattr(self.parametrized, self.param_name)
         self.spin_left.setValue(l)
         self.spin_right.setValue(r)
         self.range_slider.left = l
@@ -139,7 +139,7 @@ class SliderWidgetWithNumbers(QWidget):
         self.update_param()
 
     def update_display(self):
-        val = self.param.value
+        val = getattr(self.parametrized, self.param_name)
         self.slider.pos = val
         self.spin_val.setValue(val)
         self.slider.update()
