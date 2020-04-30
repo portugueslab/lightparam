@@ -2,6 +2,7 @@ from functools import reduce
 from .param_traits import HasTraitsLinked
 import warnings
 
+
 def get_nested(d, path):
     """
     Get value from a nested dictionary, addressing it via a list of keys
@@ -295,7 +296,9 @@ class ParameterTree:
                     pass
 
             except KeyError:
-                warnings.warn(f"Trying to restore {k}, but it is not present in the parameter tree")
+                warnings.warn(
+                    f"Trying to restore {k}, but it is not present in the parameter tree"
+                )
 
     def serialize(self):
         """ Generate state dict that can be saved to restore the tree.
