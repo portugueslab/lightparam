@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import QApplication
 from lightparam.gui.controls import *
 from lightparam.gui.collapsible_widget import CollapsibleWidget
-from lightparam.gui.precisionslider import RangeSliderWidgetWithNumbers, SliderWidgetWithNumbers
+from lightparam.gui.precisionslider import (
+    RangeSliderWidgetWithNumbers,
+    SliderWidgetWithNumbers,
+)
 from lightparam import Parametrized, Param, ParameterTree
 
 gui_map = dict(
@@ -14,6 +17,7 @@ gui_map = dict(
     slider=SliderWidgetWithNumbers,
     range_slider=RangeSliderWidgetWithNumbers,
 )
+
 
 class ParameterTreeGui(QWidget):
     def __init__(self, param_tree):
@@ -64,8 +68,13 @@ class ParameterGui(QWidget):
                 parametrized.params[name].gui,
             )
 
+    def refresh_widgets(self):
+        for name in self.parametrized.params.items().keys():
+            self.param_widgets[name].update_display()
+
 
 if __name__ == "__main__":
+
     class TestParametrized(Parametrized):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -78,14 +87,16 @@ if __name__ == "__main__":
             self.a_range = Param((0.5, 1.5), (0.0, 2.0))
             self.a_different_bool = Param(True, gui=False)
 
-
     tree = ParameterTree()
-    k = TestParametrized(tree=tree, name='pino')
+    k = TestParametrized(tree=tree, name="pino")
     app = QApplication([])
     p = ParameterGui(k)
-    ti = ControlToggleIcon(parametrized=k, name="a_different_bool",
-                                                action_on="Turn off",
-                                                action_off="Turn on")
+    ti = ControlToggleIcon(
+        parametrized=k,
+        name="a_different_bool",
+        action_on="Turn off",
+        action_off="Turn on",
+    )
     p.inner_layout.addWidget(ti)
     p.show()
     app.exec_()

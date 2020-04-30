@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 )
 
 from math import log
-from..utils import pretty_name
+from ..utils import pretty_name
 
 
 class Control(QWidget):
@@ -48,7 +48,7 @@ class ControlSpin(Control):
             pass
 
         if self.param.limits is not None and len(self.param.limits) > 2:
-            self.control.setDecimals(int(-round(log(self.param.limits[2])/log(10))))
+            self.control.setDecimals(int(-round(log(self.param.limits[2]) / log(10))))
 
         self.control.setValue(self.param.value)
 
@@ -95,18 +95,31 @@ class ControlButton(Control):
         self.control.clicked.connect(self.update_param)
 
     def update_param(self):
-        setattr(self.parametrized, self.param_name,
-                not getattr(self.parametrized, self.param_name))
+        setattr(
+            self.parametrized,
+            self.param_name,
+            not getattr(self.parametrized, self.param_name),
+        )
 
 
 class ControlToggleIcon(QToolButton, Control):
     """A toggle button for a boolean parameter.
     """
-    def __init__(self, parametrized, name, icon_on=None, icon_off=None,
-                 action_on=None, action_off=None, icon_size=32, **kwargs):
+
+    def __init__(
+        self,
+        parametrized,
+        name,
+        icon_on=None,
+        icon_off=None,
+        action_on=None,
+        action_off=None,
+        icon_size=32,
+        **kwargs
+    ):
         super().__init__(parametrized=parametrized, name=name)
-        self.text_on = action_on or name+" off"
-        self.text_off = action_off or action_on or name+" on"
+        self.text_on = action_on or name + " off"
+        self.text_off = action_off or action_on or name + " on"
         self.icon_on = icon_on
         self.icon_off = icon_off or self.icon_on
         current_text = self.text_on if self.param.value else self.text_off
@@ -116,7 +129,7 @@ class ControlToggleIcon(QToolButton, Control):
         else:
             self.setIcon(self.icon_on if self.param.value else self.icon_off)
             self.setToolTip(current_text)
-            bs = int(round(icon_size*1.5))
+            bs = int(round(icon_size * 1.5))
             self.setFixedSize(QSize(bs, bs))
             self.setIconSize(QSize(icon_size, icon_size))
 
@@ -192,8 +205,9 @@ class ControlFolder(ControlText):
         self.layout().addWidget(self.browse_btn)
 
     def open_browse_wnd(self):
-        folder = QFileDialog.getExistingDirectory(caption='File to open',
-                                                  directory=None)
+        folder = QFileDialog.getExistingDirectory(
+            caption="File to open", directory=None
+        )
         self.control.setText(folder)
 
 
@@ -326,5 +340,3 @@ class NumericControlSlider:
 
     def update_label(self):
         self.widget_label.setText(self.label + " {:.2f}".format(self.get_value()))
-
-

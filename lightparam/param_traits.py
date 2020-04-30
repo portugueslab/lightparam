@@ -1,5 +1,15 @@
-from traitlets import HasTraits, Float, observe, Enum, Int, Bool, \
-    Tuple, Unicode, TraitType
+from traitlets import (
+    HasTraits,
+    Float,
+    observe,
+    Enum,
+    Int,
+    Bool,
+    Tuple,
+    Unicode,
+    TraitType,
+)
+
 
 class FloatRange(TraitType):
     """A trait for an (ip, port) tuple.
@@ -32,6 +42,7 @@ class HasTraitsLinked(HasTraits):
     Note that (currently) once it is created it does not
     change the values of the Parametrized object it was created from!
     """
+
     def __init__(self, parametrized):
         self.params = parametrized.params
 
@@ -66,20 +77,18 @@ class HasTraitsLinked(HasTraits):
                     (kwargs["min"], kwargs["max"]) = par.limits
                 trait_type = FloatRange
             else:
-                raise TypeError(
-                    f"Param {k} does not have a matching Trait type!")
+                raise TypeError(f"Param {k} does not have a matching Trait type!")
 
             trait = trait_type(**kwargs)
             self.add_traits(**{k: trait})
-
 
     @property
     def values(self):
         return {k: getattr(self, k) for k in self.trait_names()}
 
-            # self.observe(self.trait_changed, k)
+        # self.observe(self.trait_changed, k)
 
-            # @staticmethod
-            # def trait_changed(trait_change):
-            #    self.params[trait_change["name"]].value = trait_change["new"]
-            #    print(trait_change)
+        # @staticmethod
+        # def trait_changed(trait_change):
+        #    self.params[trait_change["name"]].value = trait_change["new"]
+        #    print(trait_change)

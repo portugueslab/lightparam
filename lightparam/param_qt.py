@@ -50,7 +50,7 @@ if __name__ == "__main__":
             super().__init__(name="a/gino", **kwargs)
             self.random = 5
             self.a = Param(1)
-            self.b = Param(2.)
+            self.b = Param(2.0)
             self.c = Param(5)
             self.a_list = Param("a", ["a", "b", "c"])
             self.sig_param_changed.connect(self.update_param)
@@ -68,7 +68,6 @@ if __name__ == "__main__":
             super().__init__(name="b/c/pino", **kwargs)
             self.an_int = Param(4)
             self.a_float = Param(1.0, (-1.0, 10.0))
-
 
     p = ParameterGui(TestParametrized1())
     p.show()

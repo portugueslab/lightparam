@@ -3,20 +3,29 @@ from lightparam.param_traits import FloatRange
 from lightparam import Parametrized
 
 from IPython.display import display
-from ipywidgets import IntSlider, FloatSlider, Checkbox, FloatRangeSlider, \
-    VBox, HBox, HTML, Dropdown
+from ipywidgets import (
+    IntSlider,
+    FloatSlider,
+    Checkbox,
+    FloatRangeSlider,
+    VBox,
+    HBox,
+    HTML,
+    Dropdown,
+)
 from traitlets import link, observe, Float, Enum, Int, Bool, Unicode
 
 
 class TraitWidg(HBox):
     """ Little horizontal box with control for a parameter.
     """
+
     def __init__(self, has_traits, name):
         self.has_traits = has_traits
         trait = has_traits.traits()[name]
 
         widg = self.make_widg(trait, getattr(self.has_traits, trait.name))
-        link((has_traits, name), (widg, 'value'))
+        link((has_traits, name), (widg, "value"))
 
         super().__init__([widg])
 
@@ -27,23 +36,28 @@ class TraitWidg(HBox):
 class TraitWidgInt(TraitWidg):
     """ Control for an integer (slider).
     """
+
     def make_widg(self, trait, val):
-        return IntSlider(value=val,
-                         min=trait.min, max=trait.max)
+        return IntSlider(value=val, min=trait.min, max=trait.max)
 
 
 class TraitWidgFloat(TraitWidg):
     """ Control for a float (slider).
     """
+
     def make_widg(self, trait, val):
-        return FloatSlider(value=val,
-                           min=trait.min, max=trait.max,
-                           step=((trait.max - trait.min) / 200))
+        return FloatSlider(
+            value=val,
+            min=trait.min,
+            max=trait.max,
+            step=((trait.max - trait.min) / 200),
+        )
 
 
 class TraitWidgDropdown(TraitWidg):
     """ Control for an multiple choice dropdown.
     """
+
     def make_widg(self, trait, val):
         return Dropdown(value=val[0], options=trait.values)
 
@@ -51,6 +65,7 @@ class TraitWidgDropdown(TraitWidg):
 class TraitWidgCheck(TraitWidg):
     """ Control for a boolean value (checkbox).
     """
+
     def make_widg(self, trait, val):
         return Checkbox(value=val)
 
@@ -58,21 +73,27 @@ class TraitWidgCheck(TraitWidg):
 class TraitWidgFloatRange(TraitWidg):
     """ Control for a float range (with range slider).
     """
-    def make_widg(self, trait, val):
-        return FloatRangeSlider(value=val, min=trait.min, max=trait.max,
-                                step=(trait.max - trait.min) / 200)
 
-widgets_dict = {Int: TraitWidgInt,
-                Float: TraitWidgFloat,
-                Enum: TraitWidgDropdown,
-                Bool: TraitWidgCheck,
-                FloatRange: TraitWidgFloatRange}
+    def make_widg(self, trait, val):
+        return FloatRangeSlider(
+            value=val, min=trait.min, max=trait.max, step=(trait.max - trait.min) / 200
+        )
+
+
+widgets_dict = {
+    Int: TraitWidgInt,
+    Float: TraitWidgFloat,
+    Enum: TraitWidgDropdown,
+    Bool: TraitWidgCheck,
+    FloatRange: TraitWidgFloatRange,
+}
 
 
 class HasTraitsWidgetView:
     """ Class that generates a panel of notebook widgets for an HasTraitsLinked
     object.
     """
+
     def __init__(self, has_traits):
         self.has_traits = has_traits
 
@@ -104,6 +125,7 @@ class ParametersWidget(Parametrized):
     >>> params = ParametersWidget(grow_rois)
     >>> params.values
     """
+
     def __init__(self, params, **kwargs):
         # Generate Parametrized class:
         super().__init__(params=params, **kwargs)

@@ -61,5 +61,5 @@ class TestParamFunc(unittest.TestCase):
             return x, y
 
         p = Parametrized(params=paramfunc)
-        assert p.x==0.5
-        assert p.y=="ABCDF"
+        assert p.x == 0.5
+        assert p.y == "ABCDF"

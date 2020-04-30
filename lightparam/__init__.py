@@ -1,6 +1,6 @@
 from functools import reduce
 from .param_traits import HasTraitsLinked
-
+import warnings
 
 def get_nested(d, path):
     """
@@ -200,8 +200,15 @@ class Parametrized(object):
 
 class Param:
     def __init__(
-        self, value, limits=None, desc="", gui=None,
-        unit="", scale=None, editable=True, loadable=True,
+        self,
+        value,
+        limits=None,
+        desc="",
+        gui=None,
+        unit="",
+        scale=None,
+        editable=True,
+        loadable=True,
     ):
         """ A parameter
 
@@ -268,25 +275,27 @@ class ParameterTree:
                 # If we explicitly made the parameter not loadable from the restoring
                 # dictionary, skip. Skip also the restoring of the loadable
                 # attribute, which is not loadable itself:
-                if loadable and k[-1] != "loadable":
-                    # try to stop the signal of the parameter has one, to prevent
-                    # infinite loops:
-                    try:
-                        self.tracked["/".join(k[:-1])].block_signal = True
-                    except AttributeError:
-                        pass
+                if not loadable or k[-1] == "loadable":
+                    continue
 
-                    # Set the actual attribute, if possible:
-                    setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+                # try to stop the signal of the parameter has one, to prevent
+                # infinite loops:
+                try:
+                    self.tracked["/".join(k[:-1])].block_signal = True
+                except AttributeError:
+                    pass
 
-                    # try to stop the signal if there is one:
-                    try:
-                        self.tracked["/".join(k[:-1])].block_signal = False
-                    except AttributeError:
-                        pass
+                # Set the actual attribute, if possible:
+                setattr(self.tracked["/".join(k[:-1])], k[-1], val)
+
+                # unblock the refresh signal
+                try:
+                    self.tracked["/".join(k[:-1])].block_signal = False
+                except AttributeError:
+                    pass
 
             except KeyError:
-                pass
+                warnings.warn(f"Trying to restore {k}, but it is not present in the parameter tree")
 
     def serialize(self):
         """ Generate state dict that can be saved to restore the tree.
