@@ -1,0 +1,4 @@
+traitlets
+PyQt5
+IPython
+ipywidgets
