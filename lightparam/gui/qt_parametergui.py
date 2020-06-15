@@ -70,7 +70,8 @@ class ParameterGui(QWidget):
 
     def refresh_widgets(self):
         for name in self.parametrized.params.items().keys():
-            self.param_widgets[name].update_display()
+            if name in self.param_widgets:
+                self.param_widgets[name].update_display()
 
 
 if __name__ == "__main__":
