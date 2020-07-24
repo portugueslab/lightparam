@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name="lightparam",
-    version="0.4.1",
+    version="0.4.2",
     author="Vilim Stich, Luigi Petrucco",
     author_email="vilim@neuro.mpg.de",
     packages=find_packages(),
