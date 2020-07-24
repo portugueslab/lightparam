@@ -1,5 +1,4 @@
-from distutils.core import setup
-from setuptools import find_packages
+from distutils.core import setup, find_namespace_packages
 
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
@@ -9,7 +8,7 @@ setup(
     version="0.4.2",
     author="Vilim Stich, Luigi Petrucco",
     author_email="vilim@neuro.mpg.de",
-    packages=find_packages(),
+    packages=find_namespace_packages(exclude=("docs", "tests*")),
     install_requires=requirements,
     classifiers=[
         "Development Status :: 4 - Beta",
