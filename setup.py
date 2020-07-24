@@ -1,4 +1,4 @@
-from distutils.core import setup, find_namespace_packages
+from setuptools import setup, find_namespace_packages
 
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
