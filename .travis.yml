@@ -6,7 +6,6 @@ python:
   - 3.8
 
 before_install:
-  - python --version
   - pip install -U pip
   - pip install -U pytest
   - pip install -U pytest-cov
@@ -14,7 +13,7 @@ before_install:
 
 install:
   - pip install -r requirements.txt
-  - pip install ".[test]" . # install package + test dependencies
+  - pip install .
 
 script: pytest --cov=lightparam  # run tests
 
@@ -29,7 +28,4 @@ deploy:
     password:
         secure: "pZi4MhhkOiw8AV0ScSfY9o3/AXkH/faftkHRAyJG/swc4qesrBV2OxD6Ukh/dz0KdBUxhxRazDXZ0I3+inRxO7RPDTQgNvNZVDL0JNaoxwu1p7BNbsPcjZ9ufEDKhz+3c8o/HFtmmBYvzcIVjfuBc/M8h7YOQ4vFIC+ieoql2qtyxbupOmq4Dy4Gs0q+sAkDtgyJ0N7mSgxKzk1T1/wjBH/Tic6qOAZ5ww7nFe2LkucfpjuLH0MHrfQtxQ5MrWGV5NslNjLFWbwftOQ0/gd+gZmROKFm8s8uVVKYh1xrSNKKmMq2R66vjYtlNnBBm/KwRKdTpAh8J1PqqA3O7LCpTIrWDrg7sUFqAQ355q+aLSEli3WtwKNmia4conZBCTUn527RZwCR87l/nTL4Adu9N123AC9+lCmnoQ7v5zq+aSAzHJVsHtXC285xD2nwUdveKDlBHB79eylMCGxH/F1WIqv2IZYyvBqsdQpcDkElOij1lQ6BvN2S8Rl2wnGd6Wy1w3xVop4eKT+Hd8HbvrM+XzdB0x+wmy75oYBVc/2FSa+G/R9OHk6Heo+9Ex6ZOgy5l0hdMQLSrQ4kWArpISbxpRqghBEcm0kAFNRaQIECYwKlt8/OnvQHAqSxYv5gVFmmSfC2rhOCjOePZddrF//ZdnLilex36PNPpfeG9YfXtME="
     on:
-      tags: true
       python: 3.8
-    skip_existing: true
-    committer-from-gh: true
