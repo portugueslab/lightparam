@@ -1,17 +1,19 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
+
 setup(
     name="lightparam",
     version="0.4.2",
     author="Vilim Stich, Luigi Petrucco",
     author_email="vilim@neuro.mpg.de",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=requirements,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        # Pick your license as you wish (should match "license" above)
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",

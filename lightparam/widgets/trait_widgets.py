@@ -120,7 +120,7 @@ class ParametersWidget(Parametrized):
     """  Small messy class to generate effortlessly the parameter widget for
     a given function that has parametrized argument.
     Minimal usage example:
-    >>> from lightparam.gui.trait_widgets import ParametersWidget
+    >>> from lightparam.widgets.trait_widgets import ParametersWidget
     >>> from fimpy.roi_extraction.correlation_flooding import grow_rois
     >>> params = ParametersWidget(grow_rois)
     >>> params.values

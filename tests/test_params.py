@@ -31,7 +31,7 @@ class TestTree(unittest.TestCase):
     def testConstruct(self):
         class TestParametrized1(Parametrized):
             def __init__(self, **kwargs):
-                super().__init__(name="a/gino", **kwargs)
+                super().__init__(name="a/par1", **kwargs)
                 self.an_int = Param(1)
                 self.a_float = Param(1.0, (-1.0, 10.0))
                 self.a_str = Param("strstr")
@@ -39,7 +39,7 @@ class TestTree(unittest.TestCase):
 
         class TestParametrized2(Parametrized):
             def __init__(self, **kwargs):
-                super().__init__(name="b/c/pino", **kwargs)
+                super().__init__(name="b/c/par2", **kwargs)
                 self.an_int = Param(4)
                 self.a_float = Param(1.0, (-1.0, 10.0))
 
