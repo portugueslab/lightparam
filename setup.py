@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="lightparam",
-    version="0.4.4",
+    version="0.4.5",
     author="Vilim Stich, Luigi Petrucco",
     author_email="vilim@neuro.mpg.de",
     packages=find_namespace_packages(exclude=("docs", "tests*")),
